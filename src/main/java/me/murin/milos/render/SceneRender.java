@@ -14,6 +14,8 @@ public class SceneRender {
 
     private ShaderProgram shaderProgram;
 
+    private UniformsMap uniformsMap;
+
 
     public SceneRender() {
         List<ShaderModuleData> shaderModuleDataList = new ArrayList<>();
@@ -21,6 +23,8 @@ public class SceneRender {
         shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(start + "scene.vert", GL_VERTEX_SHADER));
         shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(start + "scene.frag", GL_FRAGMENT_SHADER));
         shaderProgram = new ShaderProgram(shaderModuleDataList);
+
+        cerateUniforms();
     }
 
     public void cleanup() {
@@ -29,6 +33,8 @@ public class SceneRender {
 
     public void render(Scene scene) {
         shaderProgram.bind();
+
+        uniformsMap.setUniform("projectionMatrix", scene.getProjection().getProjMatrix());
 
         scene.getMeshMap().values().forEach(mesh -> {
             glBindVertexArray(mesh.getVaoId());
@@ -39,4 +45,10 @@ public class SceneRender {
 
         shaderProgram.unbind();
     }
+
+    private void cerateUniforms() {
+        uniformsMap = new UniformsMap(shaderProgram.getProgramId());
+        uniformsMap.createUniforms("projectionMatrix");
+    }
+
 }

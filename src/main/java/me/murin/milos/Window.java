@@ -93,6 +93,14 @@ public class Window {
         glfwPollEvents();
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     public boolean isKeyPressed(int key) {
         return glfwGetKey(handle, key) == GLFW_PRESS;
     }

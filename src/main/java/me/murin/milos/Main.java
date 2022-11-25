@@ -21,10 +21,10 @@ public class Main implements AppLogic {
     @Override
     public void init(Window window, Scene scene, Render render) {
         float[] positions = new float[]{
-                -0.5f, 0.5f, 0.0f,
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-                0.5f, 0.5f, 0.0f,
+                -0.5f, 0.5f, -1f,
+                -0.5f, -0.5f, -1f,
+                0.5f, -0.5f, -1f,
+                0.5f, 0.5f, -1f,
         };
         float[] colors = new float[]{
                 0.5f, 0.0f, 0.0f,
