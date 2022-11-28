@@ -36,10 +36,15 @@ public class SceneRender {
 
         uniformsMap.setUniform("projectionMatrix", scene.getProjection().getProjMatrix());
 
-        scene.getMeshMap().values().forEach(mesh -> {
-            glBindVertexArray(mesh.getVaoId());
-            glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
-        });
+        for (Model m : scene.getModelMap().values()) {
+            m.getMeshList().forEach(mesh -> {
+                glBindVertexArray(mesh.getVaoId());
+                m.getEntityList().forEach(entity -> {
+                    uniformsMap.setUniform("modelMatrix", entity.getModelMatrix());
+                    glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
+                });
+            });
+        }
 
         glBindVertexArray(0);
 
@@ -49,6 +54,7 @@ public class SceneRender {
     private void cerateUniforms() {
         uniformsMap = new UniformsMap(shaderProgram.getProgramId());
         uniformsMap.createUniforms("projectionMatrix");
+        uniformsMap.createUniforms("modelMatrix");
     }
 
 }

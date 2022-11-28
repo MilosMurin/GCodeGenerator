@@ -37,7 +37,9 @@ public class Engine {
     }
 
     public void resize() {
-        scene.resize(window.getWidth(), window.getHeight());
+        if (window != null) {
+            scene.resize(window.getWidth(), window.getHeight());
+        }
     }
 
     private void run() {
