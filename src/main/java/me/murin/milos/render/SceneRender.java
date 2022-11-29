@@ -36,12 +36,21 @@ public class SceneRender {
 
         uniformsMap.setUniform("projectionMatrix", scene.getProjection().getProjMatrix());
 
+        uniformsMap.setUniform("txtSampler", 0);
+
+        TextureCache cache = scene.getTextureCache();
+
         for (Model m : scene.getModelMap().values()) {
-            m.getMeshList().forEach(mesh -> {
-                glBindVertexArray(mesh.getVaoId());
-                m.getEntityList().forEach(entity -> {
-                    uniformsMap.setUniform("modelMatrix", entity.getModelMatrix());
-                    glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
+            m.getMaterialList().forEach(material -> {
+                Texture texture = cache.getTexture(material.getTexturePath());
+                glActiveTexture(GL_TEXTURE0);
+                texture.bind();
+                material.getMeshList().forEach(mesh -> {
+                    glBindVertexArray(mesh.getVaoId());
+                    m.getEntityList().forEach(entity -> {
+                        uniformsMap.setUniform("modelMatrix", entity.getModelMatrix());
+                        glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
+                    });
                 });
             });
         }
@@ -55,6 +64,7 @@ public class SceneRender {
         uniformsMap = new UniformsMap(shaderProgram.getProgramId());
         uniformsMap.createUniforms("projectionMatrix");
         uniformsMap.createUniforms("modelMatrix");
+        uniformsMap.createUniforms("txtSampler");
     }
 
 }
