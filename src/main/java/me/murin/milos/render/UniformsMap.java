@@ -1,6 +1,7 @@
 package me.murin.milos.render;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
 import java.util.HashMap;
@@ -42,5 +43,9 @@ public class UniformsMap {
 
     public void setUniform(String name, int value) {
         glUniform1i(getUniformLocation(name), value);
+    }
+
+    public void setUniform(String name, Vector4f value) {
+        glUniform4f(getUniformLocation(name), value.x, value.y, value.z, value.w);
     }
 }

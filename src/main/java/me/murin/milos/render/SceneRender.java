@@ -42,6 +42,7 @@ public class SceneRender {
 
         for (Model m : scene.getModelMap().values()) {
             m.getMaterialList().forEach(material -> {
+                uniformsMap.setUniform("material.diffuse", material.getDiffuseColor());
                 Texture texture = cache.getTexture(material.getTexturePath());
                 glActiveTexture(GL_TEXTURE0);
                 texture.bind();
@@ -65,6 +66,7 @@ public class SceneRender {
         uniformsMap.createUniforms("projectionMatrix");
         uniformsMap.createUniforms("modelMatrix");
         uniformsMap.createUniforms("txtSampler");
+        uniformsMap.createUniforms("material.diffuse");
     }
 
 }
