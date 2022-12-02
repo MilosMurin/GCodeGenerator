@@ -1,13 +1,27 @@
 package me.murin.milos.render;
 
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glPixelStorei;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
-import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.stb.STBImage.stbi_failure_reason;
+import static org.lwjgl.stb.STBImage.stbi_image_free;
+import static org.lwjgl.stb.STBImage.stbi_load;
 
 public class Texture {
 
@@ -20,25 +34,23 @@ public class Texture {
     }
 
     public Texture(String texturePath) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.texturePath = texturePath;
-            IntBuffer w = stack.mallocInt(1);
-            IntBuffer h = stack.mallocInt(1);
-            IntBuffer channels = stack.mallocInt(1);
+        this.texturePath = texturePath;
+        IntBuffer w = MemoryUtil.memAllocInt(1);
+        IntBuffer h = MemoryUtil.memAllocInt(1);
+        IntBuffer channels = MemoryUtil.memAllocInt(1);
 
-            ByteBuffer buf = stbi_load(texturePath, w, h, channels, 4);
+        ByteBuffer buf = stbi_load(texturePath, w, h, channels, 4);
 
-            if (buf == null) {
-                throw new RuntimeException("Image file [" + texturePath + "] not loaded: " + stbi_failure_reason());
-            }
-
-            int width = w.get();
-            int height = h.get();
-
-            generateTexture(width, height, buf);
-
-            stbi_image_free(buf);
+        if (buf == null) {
+            throw new RuntimeException("Image file [" + texturePath + "] not loaded: " + stbi_failure_reason());
         }
+
+        int width = w.get();
+        int height = h.get();
+
+        generateTexture(width, height, buf);
+
+        stbi_image_free(buf);
     }
 
     public void bind() {
