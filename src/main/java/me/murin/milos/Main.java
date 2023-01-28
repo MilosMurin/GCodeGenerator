@@ -15,11 +15,11 @@ public class Main implements AppLogic {
     private Entity cubeEntity;
     private Vector4f displInc = new Vector4f();
     private float rotation;
+    private boolean rotate = false;
 
     public static void main(String[] args) {
         Main main = new Main();
-        // IDKIDLNT = i dont know, i dont like naming things
-        Engine gameEng = new Engine("IDKIDLNT", new Window.WindowOptions(), main);
+        Engine gameEng = new Engine("GCodeGenerator", new Window.WindowOptions(), main);
         gameEng.start();
     }
 
@@ -30,7 +30,7 @@ public class Main implements AppLogic {
 
     @Override
     public void init(Window window, Scene scene, Render render) {
-        Model cubeModel = ModelLoader.loadModel("plant-model", "src/main/resources/models/chair/chair.obj",
+        Model cubeModel = ModelLoader.loadModel("model1", "src/main/resources/models/chair/chair.obj",
                 scene.getTextureCache());
         scene.addModel(cubeModel);
 
@@ -54,9 +54,9 @@ public class Main implements AppLogic {
             displInc.x = 1;
         }
         if (window.isKeyPressed(GLFW_KEY_W)) {
-            displInc.z = -1;
+            displInc.z = -100;
         } else if (window.isKeyPressed(GLFW_KEY_Q)) {
-            displInc.z = 1;
+            displInc.z = 100;
         }
         if (window.isKeyPressed(GLFW_KEY_Z)) {
             displInc.w = -1;
@@ -68,6 +68,10 @@ public class Main implements AppLogic {
             rotation += 1.5;
         } else if (window.isKeyPressed(GLFW_KEY_S)) {
             rotation -= 1.5;
+        }
+
+        if (window.wasKeyReleased(GLFW_KEY_R)) {
+            rotate = !rotate;
         }
 
         if (rotation > 360) {
@@ -86,11 +90,14 @@ public class Main implements AppLogic {
 
     @Override
     public void update(Window window, Scene scene, long diffTimeMillis) {
-//        rotation += 1.5;
-//        if (rotation > 360) {
-//            rotation = 0;
+//        Constant model rotation
+//        if (rotate) {
+//            rotation += 1.5;
+//            if (rotation > 360) {
+//                rotation = 0;
+//            }
+//            cubeEntity.setRotation(1, 1, 1, (float) Math.toRadians(rotation));
+//            cubeEntity.updateModelMatrix();
 //        }
-//        cubeEntity.setRotation(1, 1, 1, (float) Math.toRadians(rotation));
-//        cubeEntity.updateModelMatrix();
     }
 }

@@ -24,7 +24,7 @@ public class Scene {
         if (model == null) {
             throw new RuntimeException("Could not find model [" + modelId + "]");
         }
-        model.getEntityList().add(entity);
+        model.addEntity(entity);
     }
 
     public Projection getProjection() {

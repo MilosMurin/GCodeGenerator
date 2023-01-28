@@ -105,6 +105,10 @@ public class Window {
         return glfwGetKey(handle, key) == GLFW_PRESS;
     }
 
+    public boolean wasKeyReleased(int key) {
+        return glfwGetKey(handle, key) == GLFW_RELEASE;
+    }
+
     protected void resized(int width, int height) {
         this.width = width;
         this.height = height;
