@@ -3,8 +3,7 @@ package me.murin.milos.dcel;
 public class Face {
 
     private final int id;
-    private Edge outerComponent;
-    private Edge innerComponent;
+    private Edge firstEdge;
 
     public Face(int id) {
         this.id = id;
@@ -14,19 +13,11 @@ public class Face {
         return id;
     }
 
-    public Edge getOuterComponent() {
-        return outerComponent;
+    public Edge getFirstEdge() {
+        return firstEdge;
     }
 
-    public void setOuterComponent(Edge outerComponent) {
-        this.outerComponent = outerComponent;
-    }
-
-    public Edge getInnerComponent() {
-        return innerComponent;
-    }
-
-    public void setInnerComponent(Edge innerComponent) {
-        this.innerComponent = innerComponent;
+    public void setFirstEdge(Edge firstEdge) {
+        this.firstEdge = firstEdge;
     }
 }

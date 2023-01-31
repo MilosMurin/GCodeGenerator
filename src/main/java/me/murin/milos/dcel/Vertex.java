@@ -3,31 +3,31 @@ package me.murin.milos.dcel;
 public class Vertex {
 
     private final int id;
-    private final int x;
-    private final int y;
-    private final int z;
+    private final float x;
+    private final float y;
+    private final float z;
     private Edge incident;
 
-    public Vertex(int id, int x, int y, int z) {
+    public Vertex(int id, float x, float y, float z) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public int getId() {
+    public float getId() {
         return id;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
-    public int getZ() {
+    public float getZ() {
         return z;
     }
 
@@ -37,5 +37,13 @@ public class Vertex {
 
     public void setIncident(Edge incident) {
         this.incident = incident;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Vertex vertex) {
+            return vertex.getId() == this.id;
+        }
+        return false;
     }
 }

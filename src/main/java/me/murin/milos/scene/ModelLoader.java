@@ -1,12 +1,22 @@
 package me.murin.milos.scene;
 
+import me.murin.milos.dcel.DoublyConnectedEdgeList;
+import me.murin.milos.dcel.Edge;
+import me.murin.milos.dcel.Face;
+import me.murin.milos.dcel.Vertex;
 import me.murin.milos.render.Material;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.render.Model;
 import me.murin.milos.render.TextureCache;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.*;
+import org.lwjgl.assimp.AIColor4D;
+import org.lwjgl.assimp.AIFace;
+import org.lwjgl.assimp.AIMaterial;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.AIString;
+import org.lwjgl.assimp.AIVector3D;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.File;
@@ -14,9 +24,24 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.assimp.Assimp.*;
+import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_DIFFUSE;
+import static org.lwjgl.assimp.Assimp.aiGetMaterialColor;
+import static org.lwjgl.assimp.Assimp.aiGetMaterialTexture;
+import static org.lwjgl.assimp.Assimp.aiImportFile;
+import static org.lwjgl.assimp.Assimp.aiProcess_CalcTangentSpace;
+import static org.lwjgl.assimp.Assimp.aiProcess_FixInfacingNormals;
+import static org.lwjgl.assimp.Assimp.aiProcess_GenSmoothNormals;
+import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
+import static org.lwjgl.assimp.Assimp.aiProcess_LimitBoneWeights;
+import static org.lwjgl.assimp.Assimp.aiProcess_PreTransformVertices;
+import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
+import static org.lwjgl.assimp.Assimp.aiReturn_SUCCESS;
+import static org.lwjgl.assimp.Assimp.aiTextureType_DIFFUSE;
+import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
 
 public class ModelLoader {
+
+    private static final DoublyConnectedEdgeList dcel = new DoublyConnectedEdgeList();
 
     private ModelLoader() { }
 
@@ -117,6 +142,7 @@ public class ModelLoader {
             data[pos++] = texCoord.x();
             data[pos++] = texCoord.y();
             data[pos++] = texCoord.z();
+            dcel.addVertex(new Vertex(pos / 3, data[pos - 3], data[pos - 2], data[pos - 1]));
         }
         return data;
     }
@@ -141,12 +167,55 @@ public class ModelLoader {
         int numFaces = aiMesh.mNumFaces();
         AIFace.Buffer faces = aiMesh.mFaces();
 
+        int edgeId = 1;
         for (int i = 0; i < numFaces; i++) {
+            Face myFace = new Face(i);
+            Edge first = null, prev = null, current = null;
+            Vertex vertex;
+
             AIFace face = faces.get(i);
             IntBuffer buffer = face.mIndices();
             while (buffer.remaining() > 0) {
-                indices.add(buffer.get());
+                int vertexPos = buffer.get();
+                indices.add(vertexPos);
+                // Dcel Fill
+                vertex = dcel.getVertex(vertexPos);
+                // if there already is an edge with the reverse origin and end base it on that
+                Edge twin = null;
+
+                if (prev != null) {
+                    twin = dcel.getTwin(prev.getOrigin(), vertex);
+                    if (twin != null) {
+                        prev.updateIdWithTwin(twin);
+                    }
+                }
+
+                current = new Edge(edgeId++, 1, vertex, myFace);
+
+                if (first == null) {
+                    first = current;
+                    myFace.setFirstEdge(current);
+                } else {
+                    prev.setNextEdge(current);
+                }
+
+                current.setPrevEdge(prev);
+
+                dcel.addEdge(current);
+                prev = current;
             }
+            // link first and last(current)
+            // update id of first if it has a twin
+            if (current != null) {
+                Edge twin = dcel.getTwin(current.getOrigin(), first.getOrigin());
+                if (twin != null) {
+                    current.updateIdWithTwin(twin);
+                }
+
+                current.setNextEdge(first);
+                first.setPrevEdge(current);
+            }
+            dcel.addFace(myFace);
         }
 
         return indices.stream().mapToInt(Integer::intValue).toArray();

@@ -30,11 +30,11 @@ public class Main implements AppLogic {
 
     @Override
     public void init(Window window, Scene scene, Render render) {
-        Model cubeModel = ModelLoader.loadModel("model1", "src/main/resources/models/chair/chair.obj",
+        Model cubeModel = ModelLoader.loadModel("model1", "src/main/resources/models/cube/cube.obj",
                 scene.getTextureCache());
         scene.addModel(cubeModel);
 
-        cubeEntity = new Entity("plant-entity", cubeModel.getId());
+        cubeEntity = new Entity("entity1", cubeModel.getId());
         cubeEntity.setPosition(0, 0, -2);
         scene.addEntity(cubeEntity);
     }
@@ -54,9 +54,9 @@ public class Main implements AppLogic {
             displInc.x = 1;
         }
         if (window.isKeyPressed(GLFW_KEY_W)) {
-            displInc.z = -100;
+            displInc.z = -1;
         } else if (window.isKeyPressed(GLFW_KEY_Q)) {
-            displInc.z = 100;
+            displInc.z = 1;
         }
         if (window.isKeyPressed(GLFW_KEY_Z)) {
             displInc.w = -1;
