@@ -13,6 +13,8 @@ public class Window {
 
     private long handle;
 
+    private MouseInput mouseInput;
+
     private int width;
     private int height;
 
@@ -69,6 +71,8 @@ public class Window {
         glfwGetFramebufferSize(handle, arrWidth, arrHeight);
         width = arrWidth[0];
         height = arrHeight[0];
+
+        this.mouseInput = new MouseInput(handle);
     }
 
     public void cleanup() {
@@ -91,6 +95,7 @@ public class Window {
     public void pollEvents() {
         // processes events
         glfwPollEvents();
+        mouseInput.input();
     }
 
     public int getWidth() {
@@ -99,6 +104,10 @@ public class Window {
 
     public int getHeight() {
         return height;
+    }
+
+    public MouseInput getMouseInput() {
+        return mouseInput;
     }
 
     public boolean isKeyPressed(int key) {
