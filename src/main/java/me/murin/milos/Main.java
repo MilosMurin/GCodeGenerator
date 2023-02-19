@@ -38,15 +38,22 @@ public class Main implements AppLogic {
                 scene.getTextureCache());
         scene.addModel(cubeModel);
 
-        cubeEntity = new Entity("entity1", cubeModel.getId());
-        cubeEntity.setPosition(0, 0, -2);
+        cubeEntity = new Entity("cubeEntity", cubeModel.getId());
         scene.addEntity(cubeEntity);
+
+        Model dcelModel = ModelLoader.getDcelModel();
+        scene.addModel(dcelModel);
+
+        Entity entity = new Entity("dcelEntity", dcelModel.getId());
+        scene.addEntity(entity);
     }
 
     @Override
     public void input(Window window, Scene scene, long diffTimeMillis) {
         float move = diffTimeMillis * MOVEMENT_SPEED;
         Camera camera = scene.getCamera();
+
+        // TODO: Make camera not able to move, make normal rotations
 
         if (window.isKeyPressed(GLFW_KEY_W)) {
             camera.moveForward(move);

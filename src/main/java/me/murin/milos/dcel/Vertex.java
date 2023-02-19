@@ -15,8 +15,19 @@ public class Vertex {
         this.z = z;
     }
 
-    public float getId() {
+    public int getId() {
         return id;
+    }
+
+    /**
+     * @param index 0-x, 1-y, 2-z, other-x
+     */
+    public float getCoord(int index) {
+        return switch (index) {
+            case 1 -> y;
+            case 2 -> z;
+            default -> x;
+        };
     }
 
     public float getX() {

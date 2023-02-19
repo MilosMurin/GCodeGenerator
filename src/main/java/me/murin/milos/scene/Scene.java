@@ -18,7 +18,8 @@ public class Scene {
         projection = new Projection(width, height);
         textureCache = new TextureCache();
         camera = new Camera();
-        camera.setPosition(0, 0, 3f); // sets the default position a bit back to see the model
+        camera.setPosition(0, 3f, 0); // sets the default position a bit back to see the model
+        camera.setRotation((float) Math.PI / 2, 0);
     }
 
     public void addEntity(Entity entity) {

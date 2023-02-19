@@ -142,7 +142,7 @@ public class ModelLoader {
             data[pos++] = texCoord.x();
             data[pos++] = texCoord.y();
             data[pos++] = texCoord.z();
-            dcel.addVertex(new Vertex(pos / 3, data[pos - 3], data[pos - 2], data[pos - 1]));
+            dcel.addVertex(new Vertex((pos / 3) - 1, data[pos - 3], data[pos - 2], data[pos - 1]));
         }
         return data;
     }
@@ -167,7 +167,7 @@ public class ModelLoader {
         int numFaces = aiMesh.mNumFaces();
         AIFace.Buffer faces = aiMesh.mFaces();
 
-        int edgeId = 1;
+        int edgeId = 0;
         for (int i = 0; i < numFaces; i++) {
             Face myFace = new Face(i);
             Edge first = null, prev = null, current = null;
@@ -219,6 +219,10 @@ public class ModelLoader {
         }
 
         return indices.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    public static Model getDcelModel() {
+        return dcel.createModel();
     }
 
 }

@@ -1,5 +1,9 @@
 package me.murin.milos.dcel;
 
+import me.murin.milos.render.Material;
+import me.murin.milos.render.Mesh;
+import me.murin.milos.render.Model;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +41,7 @@ public class DoublyConnectedEdgeList {
      * Going the oposite way
      *
      * @param origin the origin of the main edge (the end of the twin edge to search)
-     * @param end the end of the main edge (the origin of the twin edge to search)
+     * @param end    the end of the main edge (the origin of the twin edge to search)
      * @return twin edge if such edge exists, null if nothing found
      */
     public Edge getTwin(Vertex origin, Vertex end) {
@@ -55,6 +59,37 @@ public class DoublyConnectedEdgeList {
 
     public Face getFace(int pos) {
         return this.faces.get(pos);
+    }
+
+
+    public Model createModel() {
+        List<Material> materials = new ArrayList<>();
+        Material material = new Material();
+
+        // vertices
+        float[] vertexBuffer = new float[vertices.size() * 3];
+        for (int i = 0; i < vertices.size(); i++) {
+            for (int j = 0; j < 3; j++) {
+                vertexBuffer[3 * i + j] = vertices.get(i).getCoord(j);
+            }
+        }
+        // texture coords
+        int numElements = (vertices.size() / 3) * 2;
+        float[] texCoords = new float[numElements];
+        // indices
+        List<Integer> indices = new ArrayList<>();
+        for (Face f : faces) {
+            Edge current = f.getFirstEdge();
+            indices.add(current.getOrigin().getId());
+            for (int i = 0; i < 2; i++) {
+                current = current.getNextEdge();
+                indices.add(current.getOrigin().getId());
+            }
+        }
+        material.getMeshList().add(new Mesh(vertexBuffer, texCoords, indices.stream().mapToInt(Integer::intValue).toArray()));
+
+        materials.add(material);
+        return new Model("Dcel model", materials);
     }
 
 }
