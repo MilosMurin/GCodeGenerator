@@ -8,6 +8,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL30.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL30.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL30.GL_FLOAT;
@@ -26,6 +27,12 @@ public class Mesh {
     private int numVertices;
     private int vaoId;
     private List<Integer> vboIdList;
+    private int drawType = GL_TRIANGLES;
+
+    public Mesh(float[] positions, int[] indices, int drawType) {
+        this(positions, new float[positions.length / 3], indices);
+        this.drawType = drawType;
+    }
 
     public Mesh(float[] positions, float[] textCoords, int[] indices) {
 
@@ -87,6 +94,14 @@ public class Mesh {
 
     public int getNumVertices() {
         return numVertices;
+    }
+
+    public int getDrawType() {
+        return drawType;
+    }
+
+    public void setDrawType(int drawType) {
+        this.drawType = drawType;
     }
 
     public int getVaoId() {

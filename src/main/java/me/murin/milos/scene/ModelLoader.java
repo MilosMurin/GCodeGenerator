@@ -42,6 +42,7 @@ import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
 public class ModelLoader {
 
     private static final DoublyConnectedEdgeList dcel = new DoublyConnectedEdgeList();
+    private static final List<DoublyConnectedEdgeList> dcels = new ArrayList<>();
 
     private ModelLoader() { }
 
@@ -122,18 +123,21 @@ public class ModelLoader {
     }
 
     public static Mesh processMesh(AIMesh aiMesh) {
-        float[] vertices = processVertices(aiMesh);
+        DoublyConnectedEdgeList dcel1 = new DoublyConnectedEdgeList();
+
+        float[] vertices = processVertices(aiMesh, dcel1);
         float[] texCoords = processTexCoords(aiMesh);
-        int[] indices = processIndices(aiMesh);
+        int[] indices = processIndices(aiMesh, dcel1);
         if (texCoords.length == 0) {
             int numElements = (vertices.length / 3) * 2;
             texCoords = new float[numElements];
         }
+        dcels.add(dcel1);
 
         return new Mesh(vertices, texCoords, indices);
     }
 
-    private static float[] processVertices(AIMesh aiMesh) {
+    private static float[] processVertices(AIMesh aiMesh, DoublyConnectedEdgeList dcel1) {
         AIVector3D.Buffer buffer = aiMesh.mVertices();
         float[] data = new float[buffer.remaining() * 3];
         int pos = 0;
@@ -142,7 +146,7 @@ public class ModelLoader {
             data[pos++] = texCoord.x();
             data[pos++] = texCoord.y();
             data[pos++] = texCoord.z();
-            dcel.addVertex(new Vertex((pos / 3) - 1, data[pos - 3], data[pos - 2], data[pos - 1]));
+            dcel1.addVertex(new Vertex((pos / 3) - 1, data[pos - 3], data[pos - 2], data[pos - 1]));
         }
         return data;
     }
@@ -162,10 +166,11 @@ public class ModelLoader {
         return data;
     }
 
-    private static int[] processIndices(AIMesh aiMesh) {
+    private static int[] processIndices(AIMesh aiMesh, DoublyConnectedEdgeList dcel1) {
         List<Integer> indices = new ArrayList<>();
         int numFaces = aiMesh.mNumFaces();
         AIFace.Buffer faces = aiMesh.mFaces();
+
 
         int edgeId = 0;
         for (int i = 0; i < numFaces; i++) {
@@ -179,12 +184,12 @@ public class ModelLoader {
                 int vertexPos = buffer.get();
                 indices.add(vertexPos);
                 // Dcel Fill
-                vertex = dcel.getVertex(vertexPos);
+                vertex = dcel1.getVertex(vertexPos);
                 // if there already is an edge with the reverse origin and end base it on that
                 Edge twin = null;
 
                 if (prev != null) {
-                    twin = dcel.getTwin(prev.getOrigin(), vertex);
+                    twin = dcel1.getTwin(prev.getOrigin(), vertex);
                     if (twin != null) {
                         prev.updateIdWithTwin(twin);
                     }
@@ -201,13 +206,13 @@ public class ModelLoader {
 
                 current.setPrevEdge(prev);
 
-                dcel.addEdge(current);
+                dcel1.addEdge(current);
                 prev = current;
             }
             // link first and last(current)
             // update id of first if it has a twin
             if (current != null) {
-                Edge twin = dcel.getTwin(current.getOrigin(), first.getOrigin());
+                Edge twin = dcel1.getTwin(current.getOrigin(), first.getOrigin());
                 if (twin != null) {
                     current.updateIdWithTwin(twin);
                 }
@@ -215,14 +220,22 @@ public class ModelLoader {
                 current.setNextEdge(first);
                 first.setPrevEdge(current);
             }
-            dcel.addFace(myFace);
+            dcel1.addFace(myFace);
         }
 
         return indices.stream().mapToInt(Integer::intValue).toArray();
     }
 
     public static Model getDcelModel() {
-        return dcel.createModel();
+        List<Material> materials = new ArrayList<>();
+        Material material = new Material();
+
+        for (DoublyConnectedEdgeList dcl : dcels) {
+            material.getMeshList().add(dcl.getMesh());
+        }
+
+        materials.add(material);
+        return new Model("Dcel model", materials);
     }
 
 }

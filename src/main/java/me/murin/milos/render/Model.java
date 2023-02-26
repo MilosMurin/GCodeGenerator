@@ -12,6 +12,8 @@ public class Model {
 
     private List<Entity> entityList;
 
+    private boolean visible = true;
+
     public Model(String id, List<Material> materialList) {
         this.id = id;
         this.materialList = materialList;
@@ -36,5 +38,13 @@ public class Model {
 
     public List<Entity> getEntityList() {
         return entityList;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

@@ -13,13 +13,27 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Main implements AppLogic {
 
+    // TODO: input vrch objektu a ciary
+
+
+    private static final String RES_PATH = "src/main/resources/models/";
+    private static final String CUBE_PATH = "cube/cube.obj";
+    private static final String TEST_PATH = "test/test.obj";
+    private static final String CHAIR_PATH = "chair/chair.obj";
+    private static final String TREE_PATH = "tree/tree.obj";
+    private static final String FISH_PATH = "fish/Goldfish_01.obj";
+
     private static final float MOUSE_SENSITIVITY = 0.1f;
-    private static final float MOVEMENT_SPEED = 0.01f;
+    private static final float MOVEMENT_SPEED = 0.05f;
 
     private Entity cubeEntity;
     private Vector4f displInc = new Vector4f();
     private float rotation;
     private boolean rotate = false;
+
+    private boolean dcelVisible = false;
+    private Model cubeModel;
+    private Model dcelModel;
 
     public static void main(String[] args) {
         Main main = new Main();
@@ -34,15 +48,16 @@ public class Main implements AppLogic {
 
     @Override
     public void init(Window window, Scene scene, Render render) {
-        Model cubeModel = ModelLoader.loadModel("model1", "src/main/resources/models/cube/cube.obj",
+        cubeModel = ModelLoader.loadModel("model1", RES_PATH + TEST_PATH,
                 scene.getTextureCache());
         scene.addModel(cubeModel);
 
         cubeEntity = new Entity("cubeEntity", cubeModel.getId());
         scene.addEntity(cubeEntity);
 
-        Model dcelModel = ModelLoader.getDcelModel();
+        dcelModel = ModelLoader.getDcelModel();
         scene.addModel(dcelModel);
+        dcelModel.setVisible(dcelVisible);
 
         Entity entity = new Entity("dcelEntity", dcelModel.getId());
         scene.addEntity(entity);
@@ -53,7 +68,11 @@ public class Main implements AppLogic {
         float move = diffTimeMillis * MOVEMENT_SPEED;
         Camera camera = scene.getCamera();
 
-        // TODO: Make camera not able to move, make normal rotations
+        // TODO: Make camera not able to move, make normal rotations or make camer rotate around the origin only
+
+        dcelVisible = window.isKeyPressed(GLFW_KEY_Q);
+        dcelModel.setVisible(dcelVisible);
+        cubeModel.setVisible(!dcelVisible);
 
         if (window.isKeyPressed(GLFW_KEY_W)) {
             camera.moveForward(move);

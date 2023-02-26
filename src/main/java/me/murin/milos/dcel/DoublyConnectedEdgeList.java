@@ -1,11 +1,11 @@
 package me.murin.milos.dcel;
 
-import me.murin.milos.render.Material;
 import me.murin.milos.render.Mesh;
-import me.murin.milos.render.Model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.GL_LINES;
 
 public class DoublyConnectedEdgeList {
 
@@ -62,10 +62,7 @@ public class DoublyConnectedEdgeList {
     }
 
 
-    public Model createModel() {
-        List<Material> materials = new ArrayList<>();
-        Material material = new Material();
-
+    public Mesh getMesh() {
         // vertices
         float[] vertexBuffer = new float[vertices.size() * 3];
         for (int i = 0; i < vertices.size(); i++) {
@@ -73,9 +70,6 @@ public class DoublyConnectedEdgeList {
                 vertexBuffer[3 * i + j] = vertices.get(i).getCoord(j);
             }
         }
-        // texture coords
-        int numElements = (vertices.size() / 3) * 2;
-        float[] texCoords = new float[numElements];
         // indices
         List<Integer> indices = new ArrayList<>();
         for (Face f : faces) {
@@ -86,10 +80,7 @@ public class DoublyConnectedEdgeList {
                 indices.add(current.getOrigin().getId());
             }
         }
-        material.getMeshList().add(new Mesh(vertexBuffer, texCoords, indices.stream().mapToInt(Integer::intValue).toArray()));
-
-        materials.add(material);
-        return new Model("Dcel model", materials);
+        return new Mesh(vertexBuffer, indices.stream().mapToInt(Integer::intValue).toArray(), GL_LINES);
     }
 
 }

@@ -42,6 +42,9 @@ public class SceneRender {
         TextureCache cache = scene.getTextureCache();
 
         for (Model m : scene.getModelMap().values()) {
+            if (!m.isVisible()) {
+                continue;
+            }
             m.getMaterialList().forEach(material -> {
                 uniformsMap.setUniform("material.diffuse", material.getDiffuseColor());
                 Texture texture = cache.getTexture(material.getTexturePath());
@@ -51,7 +54,7 @@ public class SceneRender {
                     glBindVertexArray(mesh.getVaoId());
                     m.getEntityList().forEach(entity -> {
                         uniformsMap.setUniform("modelMatrix", entity.getModelMatrix());
-                        glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
+                        glDrawElements(mesh.getDrawType(), mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
                     });
                 });
             });
