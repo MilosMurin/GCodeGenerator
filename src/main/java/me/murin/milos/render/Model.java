@@ -1,5 +1,6 @@
 package me.murin.milos.render;
 
+import me.murin.milos.dcel.DoublyConnectedEdgeList;
 import me.murin.milos.scene.Entity;
 
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ public class Model {
     private List<Material> materialList;
 
     private List<Entity> entityList;
+
+    private Model dcelModel;
 
     private boolean visible = true;
 
@@ -46,5 +49,22 @@ public class Model {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public void createDcelModel(List<DoublyConnectedEdgeList> dcels) {
+
+        List<Material> materials = new ArrayList<>();
+        Material material = new Material();
+
+        for (DoublyConnectedEdgeList dcl : dcels) {
+            material.getMeshList().add(dcl.getMesh());
+        }
+
+        materials.add(material);
+        dcelModel = new Model(id + "Dcel", materials);
+    }
+
+    public Model getDcelModel() {
+        return dcelModel;
     }
 }

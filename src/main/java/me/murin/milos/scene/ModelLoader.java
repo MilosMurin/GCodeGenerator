@@ -41,12 +41,21 @@ import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
 
 public class ModelLoader {
 
-    private static final DoublyConnectedEdgeList dcel = new DoublyConnectedEdgeList();
     private static final List<DoublyConnectedEdgeList> dcels = new ArrayList<>();
+    private static boolean makeDcel = false;
 
     private ModelLoader() { }
 
+    public static Model loadModelWithDcel(String modelId, String modelPath, TextureCache textureCache) {
+        makeDcel = true;
+        return loadModel(modelId, modelPath, textureCache,
+                aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
+                        aiProcess_Triangulate | aiProcess_FixInfacingNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights |
+                        aiProcess_PreTransformVertices);
+    }
+
     public static Model loadModel(String modelId, String modelPath, TextureCache textureCache) {
+        makeDcel = false;
         return loadModel(modelId, modelPath, textureCache,
                 aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
                         aiProcess_Triangulate | aiProcess_FixInfacingNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights |
@@ -93,7 +102,11 @@ public class ModelLoader {
             materialList.add(defaultMaterial);
         }
 
-        return new Model(modelId, materialList);
+        Model model = new Model(modelId, materialList);
+        if (makeDcel) {
+            model.createDcelModel(dcels);
+        }
+        return model;
 
     }
 
@@ -132,7 +145,9 @@ public class ModelLoader {
             int numElements = (vertices.length / 3) * 2;
             texCoords = new float[numElements];
         }
-        dcels.add(dcel1);
+        if (makeDcel) {
+            dcels.add(dcel1);
+        }
 
         return new Mesh(vertices, texCoords, indices);
     }
@@ -146,7 +161,9 @@ public class ModelLoader {
             data[pos++] = texCoord.x();
             data[pos++] = texCoord.y();
             data[pos++] = texCoord.z();
-            dcel1.addVertex(new Vertex((pos / 3) - 1, data[pos - 3], data[pos - 2], data[pos - 1]));
+            if (makeDcel) {
+                dcel1.addVertex(new Vertex((pos / 3) - 1, data[pos - 3], data[pos - 2], data[pos - 1]));
+            }
         }
         return data;
     }
@@ -183,44 +200,48 @@ public class ModelLoader {
             while (buffer.remaining() > 0) {
                 int vertexPos = buffer.get();
                 indices.add(vertexPos);
-                // Dcel Fill
-                vertex = dcel1.getVertex(vertexPos);
-                // if there already is an edge with the reverse origin and end base it on that
-                Edge twin = null;
+                if (makeDcel) {
+                    // Dcel Fill
+                    vertex = dcel1.getVertex(vertexPos);
+                    // if there already is an edge with the reverse origin and end base it on that
+                    Edge twin = null;
 
-                if (prev != null) {
-                    twin = dcel1.getTwin(prev.getOrigin(), vertex);
-                    if (twin != null) {
-                        prev.updateIdWithTwin(twin);
+                    if (prev != null) {
+                        twin = dcel1.getTwin(prev.getOrigin(), vertex);
+                        if (twin != null) {
+                            prev.updateIdWithTwin(twin);
+                        }
                     }
+
+                    current = new Edge(edgeId++, 1, vertex, myFace);
+
+                    if (first == null) {
+                        first = current;
+                        myFace.setFirstEdge(current);
+                    } else {
+                        prev.setNextEdge(current);
+                    }
+
+                    current.setPrevEdge(prev);
+
+                    dcel1.addEdge(current);
+                    prev = current;
                 }
-
-                current = new Edge(edgeId++, 1, vertex, myFace);
-
-                if (first == null) {
-                    first = current;
-                    myFace.setFirstEdge(current);
-                } else {
-                    prev.setNextEdge(current);
-                }
-
-                current.setPrevEdge(prev);
-
-                dcel1.addEdge(current);
-                prev = current;
             }
-            // link first and last(current)
-            // update id of first if it has a twin
-            if (current != null) {
-                Edge twin = dcel1.getTwin(current.getOrigin(), first.getOrigin());
-                if (twin != null) {
-                    current.updateIdWithTwin(twin);
-                }
+            if (makeDcel) {
+                // link first and last(current)
+                // update id of first if it has a twin
+                if (current != null) {
+                    Edge twin = dcel1.getTwin(current.getOrigin(), first.getOrigin());
+                    if (twin != null) {
+                        current.updateIdWithTwin(twin);
+                    }
 
-                current.setNextEdge(first);
-                first.setPrevEdge(current);
+                    current.setNextEdge(first);
+                    first.setPrevEdge(current);
+                }
+                dcel1.addFace(myFace);
             }
-            dcel1.addFace(myFace);
         }
 
         return indices.stream().mapToInt(Integer::intValue).toArray();
@@ -235,7 +256,7 @@ public class ModelLoader {
         }
 
         materials.add(material);
-        return new Model("Dcel model", materials);
+        return new Model("dcelModel", materials);
     }
 
 }
