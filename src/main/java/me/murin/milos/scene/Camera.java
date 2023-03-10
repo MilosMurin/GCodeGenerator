@@ -4,6 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import static me.murin.milos.Main.sw;
+
 public class Camera {
 
     private Vector3f direction;
@@ -64,10 +66,17 @@ public class Camera {
     }
 
     private void recalculate() {
-        viewMatrix.identity()
-                .rotateX(rotation.x)
-                .rotateY(rotation.y)
-                .translate(-position.x, -position.y, -position.z);
+        if (sw) {
+            viewMatrix.identity()
+                    .translate(-position.x, -position.y, -position.z)
+                    .rotateX(rotation.x)
+                    .rotateY(rotation.y);
+        } else {
+            viewMatrix.identity()
+                    .rotateX(rotation.x)
+                    .rotateY(rotation.y)
+                    .translate(-position.x, -position.y, -position.z);
+        }
     }
 
     public void setPosition(float x, float y, float z) {

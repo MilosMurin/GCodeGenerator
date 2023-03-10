@@ -14,6 +14,9 @@ public class DoublyConnectedEdgeList {
     private final List<Vertex> vertices;
     private final List<Face> faces;
 
+    private final float[] extremeX = new float[] {Float.MAX_VALUE, Float.MIN_VALUE}; // 0 - min, 1 - max
+    private final float[] extremeZ = new float[] {Float.MAX_VALUE, Float.MIN_VALUE};
+
     public DoublyConnectedEdgeList() {
         this.edges = new ArrayList<>();
         this.vertices = new ArrayList<>();
@@ -22,6 +25,32 @@ public class DoublyConnectedEdgeList {
 
     public void addVertex(Vertex vertex) {
         this.vertices.add(vertex);
+        if (vertex.getX() < extremeX[0]) {
+            extremeX[0] = vertex.getX();
+        } else if (vertex.getX() > extremeX[1]) {
+            extremeX[1] = vertex.getX();
+        }
+        if (vertex.getZ() < extremeZ[0]) {
+            extremeZ[0] = vertex.getZ();
+        } else if (vertex.getZ() > extremeZ[1]) {
+            extremeZ[1] = vertex.getZ();
+        }
+    }
+
+    public float getExtremeX(boolean max) {
+        if (max) {
+            return extremeX[1];
+        } else {
+            return extremeX[0];
+        }
+    }
+
+    public float getExtremeZ(boolean max) {
+        if (max) {
+            return extremeZ[1];
+        } else {
+            return extremeZ[0];
+        }
     }
 
     public Vertex getVertex(int pos) {

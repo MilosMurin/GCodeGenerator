@@ -2,6 +2,7 @@ package me.murin.milos;
 
 import me.murin.milos.render.Model;
 import me.murin.milos.render.Render;
+import me.murin.milos.roads.RoadLoader;
 import me.murin.milos.scene.Camera;
 import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
@@ -18,26 +19,20 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 
 public class Main implements AppLogic {
 
-    // TODO: ciary
-    // TODO: input buttons?
-
-
-    private static final String RES_PATH = "src/main/resources/models/";
+    public static final boolean sw = false;
+    private static final String RES_PATH = "src/main/resources/";
     private static final String CUBE_PATH = "cube/cube.obj";
     private static final String TEST_PATH = "test/test.obj";
     private static final String TESTFULL_PATH = "test/testFull.obj";
-    private static final String CHAIR_PATH = "chair/chair.obj";
-    private static final String TREE_PATH = "tree/tree.obj";
-    private static final String FISH_PATH = "fish/Goldfish_01.obj";
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
-    private static final float MOVEMENT_SPEED = 0.05f;
-
-    private Entity cubeEntity;
+    private static final String MODEL_PATH = RES_PATH + "models/";
 
     private boolean dcelVisible = false;
     private Model mainModel;
     private Model dcelModel;
+    private static final float MOVEMENT_SPEED = 0.01f;
+    private Model roadModel;
 
     public static void main(String[] args) {
         Main main = new Main();
@@ -52,19 +47,26 @@ public class Main implements AppLogic {
 
     @Override
     public void init(Window window, Scene scene, Render render) {
-        mainModel = ModelLoader.loadModelWithDcel("mainModel", RES_PATH + TESTFULL_PATH,
-                scene.getTextureCache());
-        scene.addModel(mainModel);
 
-        cubeEntity = new Entity("mainEntity", mainModel.getId());
-        scene.addEntity(cubeEntity);
+        mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL_PATH + TEST_PATH,
+                scene.getTextureCache());
+        addModelAndEntity(scene, mainModel, "mainEntity", true);
 
         dcelModel = mainModel.getDcelModel();
-        scene.addModel(dcelModel);
-        dcelModel.setVisible(dcelVisible);
+        addModelAndEntity(scene, dcelModel, "dcelEntity", dcelVisible);
 
-        Entity entity = new Entity("dcelEntity", dcelModel.getId());
-        scene.addEntity(entity);
+        RoadLoader rl = new RoadLoader(RES_PATH + "osm/map.osm");
+        roadModel = rl.getModel();
+        Entity en = addModelAndEntity(scene, roadModel, "roadEntity", true);
+    }
+
+    public Entity addModelAndEntity(Scene scene, Model model, String entityId, boolean visible) {
+        scene.addModel(model);
+        model.setVisible(visible);
+
+        Entity dcelEntity = new Entity(entityId, model.getId());
+        scene.addEntity(dcelEntity);
+        return dcelEntity;
     }
 
     @Override
