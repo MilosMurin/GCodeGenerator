@@ -4,21 +4,16 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import static me.murin.milos.Main.sw;
-
 public class Camera {
+    // this class is a bit different than in the tutorial because this rotates the camera around the origin
 
-    private Vector3f direction;
     private Vector3f position;
-    private Vector3f right;
     private Vector2f rotation;
     private Vector3f up;
     private Matrix4f viewMatrix;
 
     public Camera() {
-        direction = new Vector3f();
         position = new Vector3f();
-        right = new Vector3f();
         rotation = new Vector2f();
         up = new Vector3f();
         viewMatrix = new Matrix4f();
@@ -29,54 +24,24 @@ public class Camera {
         recalculate();
     }
 
-    public void moveBackwards(float inc) {
-        viewMatrix.positiveZ(direction).negate().mul(inc);
-        position.sub(direction);
-        recalculate();
-    }
-
-    public void moveDown(float inc) {
+    public void moveFurther(float inc) {
         viewMatrix.positiveY(up).mul(inc);
         position.sub(up);
         recalculate();
     }
 
-    public void moveForward(float inc) {
-        viewMatrix.positiveZ(direction).negate().mul(inc);
-        position.add(direction);
-        recalculate();
-    }
-
-    public void moveLeft(float inc) {
-        viewMatrix.positiveX(right).mul(inc);
-        position.sub(right);
-        recalculate();
-    }
-
-    public void moveRight(float inc) {
-        viewMatrix.positiveX(right).mul(inc);
-        position.add(right);
-        recalculate();
-    }
-
-    public void moveUp(float inc) {
+    public void moveCloser(float inc) {
         viewMatrix.positiveY(up).mul(inc);
         position.add(up);
         recalculate();
     }
 
     private void recalculate() {
-        if (sw) {
-            viewMatrix.identity()
-                    .translate(-position.x, -position.y, -position.z)
-                    .rotateX(rotation.x)
-                    .rotateY(rotation.y);
-        } else {
-            viewMatrix.identity()
-                    .rotateX(rotation.x)
-                    .rotateY(rotation.y)
-                    .translate(-position.x, -position.y, -position.z);
-        }
+        // using this differently than in the tutorial because this rotates the camera around the origin
+        viewMatrix.identity()
+                .translate(-position.x, -position.y, -position.z)
+                .rotateX(rotation.x)
+                .rotateY(rotation.y);
     }
 
     public void setPosition(float x, float y, float z) {

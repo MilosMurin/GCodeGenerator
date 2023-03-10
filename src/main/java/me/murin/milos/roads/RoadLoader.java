@@ -25,13 +25,16 @@ public class RoadLoader {
 
     // LAT - X, LON - Z
 
-    private final float[] extremeX = new float[] {Float.MAX_VALUE, Float.MIN_VALUE}; // 0 - min, 1 - max
-    private final float[] extremeZ = new float[] {Float.MAX_VALUE, Float.MIN_VALUE};
     private HashMap<String, Node> nodes = new HashMap<>();
     private ArrayList<Way> ways = new ArrayList<>();
     private HashMap<String, Integer> nodeIds = new HashMap<>();
+
     private float scaleX = 0.5f;
     private float scaleZ = 0.5f;
+
+    private final float[] extremeX = new float[] {Float.MAX_VALUE, Float.MIN_VALUE}; // 0 - min, 1 - max
+    private final float[] extremeZ = new float[] {Float.MAX_VALUE, Float.MIN_VALUE};
+
     private Model model = null;
 
     public RoadLoader(String path) {
@@ -89,8 +92,17 @@ public class RoadLoader {
         // indices
         List<Integer> indices = new ArrayList<>();
         for (Way w : ways) {
+            List<Node> nodes2 = w.getNodes();
+            // make pairs for each two nodes that follow each other
+            Node prev = null;
             for (Node n : w.getNodes()) {
+                if (prev == null) {
+                    prev = n;
+                    continue;
+                }
+                indices.add(nodeIds.get(prev.getId()));
                 indices.add(nodeIds.get(n.getId()));
+                prev = n;
             }
         }
         material.getMeshList().add(new Mesh(vertexBuffer, indices.stream().mapToInt(Integer::intValue).toArray(),
