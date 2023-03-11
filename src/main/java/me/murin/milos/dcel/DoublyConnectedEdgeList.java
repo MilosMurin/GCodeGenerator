@@ -83,6 +83,7 @@ public class DoublyConnectedEdgeList {
     }
 
     public void addFace(Face face) {
+        face.finishUpFace();
         this.faces.add(face);
     }
 
@@ -90,6 +91,14 @@ public class DoublyConnectedEdgeList {
         return this.faces.get(pos);
     }
 
+    public Face getFaceForPoint(float x, float z) {
+        for (Face f : faces) {
+            if (f.isPointInFace(x, z)) {
+                return f;
+            }
+        }
+        return null;
+    }
 
     public Mesh getMesh() {
         // vertices

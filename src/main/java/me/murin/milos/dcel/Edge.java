@@ -10,6 +10,13 @@ public class Edge {
     private Edge nextEdge;
     private Edge prevEdge;
 
+    private float a;
+    private float b;
+    private float c;
+
+    private boolean greater;
+    private boolean greaterSet = false;
+
     public Edge(int id, int edgeId, Vertex origin, Face incidentFace) {
         this.id = id;
         this.edgeId = edgeId;
@@ -72,6 +79,11 @@ public class Edge {
 
     public void setNextEdge(Edge nextEdge) {
         this.nextEdge = nextEdge;
+
+        // for analytical geometry
+        this.a = nextEdge.getOrigin().getZ() - this.origin.getZ();
+        this.b = -(nextEdge.getOrigin().getX() - this.origin.getX());
+        this.c = -(this.a * this.origin.getX() + this.b * this.origin.getZ());
     }
 
     public Edge getPrevEdge() {
@@ -80,5 +92,30 @@ public class Edge {
 
     public void setPrevEdge(Edge prevEdge) {
         this.prevEdge = prevEdge;
+    }
+
+    public float testVertex(Vertex v) {
+        return this.testPoint(v.getX(), v.getZ());
+    }
+
+    public float testPoint(float x, float z) {
+        return a * x + b * z + c;
+    }
+
+    public void setGreater(boolean greater) {
+        this.greater = greater;
+        this.greaterSet = true;
+    }
+
+    public boolean isInHalfPlane(float x, float z) {
+        // if i will not want to take the edges change this to be a sharp inequality
+        if (greaterSet) {
+            if (greater) {
+                return testPoint(x, z) >= 0;
+            } else {
+                return testPoint(x, z) <= 0;
+            }
+        }
+        return false;
     }
 }
