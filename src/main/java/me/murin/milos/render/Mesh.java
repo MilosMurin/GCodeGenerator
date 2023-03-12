@@ -29,8 +29,8 @@ public class Mesh {
     private List<Integer> vboIdList;
     private int drawType = GL_TRIANGLES;
 
-    public Mesh(float[] positions, int[] indices, int drawType) {
-        this(positions, new float[positions.length / 3], indices);
+    public Mesh(float[] positions, List<Integer> indices, int drawType) {
+        this(positions, new float[positions.length / 3], indices.stream().mapToInt(Integer::intValue).toArray());
         this.drawType = drawType;
     }
 

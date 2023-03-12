@@ -118,7 +118,7 @@ public class DoublyConnectedEdgeList {
                 indices.add(current.getOrigin().getId());
             }
         }
-        return new Mesh(vertexBuffer, indices.stream().mapToInt(Integer::intValue).toArray(), GL_LINES);
+        return new Mesh(vertexBuffer, indices, GL_LINES);
     }
 
 }

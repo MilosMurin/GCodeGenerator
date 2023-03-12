@@ -30,6 +30,9 @@ public class Main implements AppLogic {
     private Model roadModel;
 
     public static void main(String[] args) {
+
+        // TODO: Create a plane from a way
+        // TODO: Make intersections for all roads -> create a model of the new roads
         Main main = new Main();
         Engine gameEng = new Engine("GCodeGenerator", new Window.WindowOptions(), main);
         gameEng.start();

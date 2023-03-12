@@ -8,6 +8,10 @@ public class Vertex {
     private final float z;
     private Edge incident;
 
+    public Vertex(float x, float y, float z) {
+        this(-1, x, y, z);
+    }
+
     public Vertex(int id, float x, float y, float z) {
         this.id = id;
         this.x = x;

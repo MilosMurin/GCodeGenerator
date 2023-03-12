@@ -4,6 +4,7 @@ import info.pavie.basicosmparser.controller.OSMParser;
 import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Node;
 import info.pavie.basicosmparser.model.Way;
+import me.murin.milos.geometry.Road;
 import me.murin.milos.render.Material;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.render.Model;
@@ -25,15 +26,15 @@ public class RoadLoader {
 
     // LAT - X, LON - Z
 
-    private HashMap<String, Node> nodes = new HashMap<>();
-    private ArrayList<Way> ways = new ArrayList<>();
-    private HashMap<String, Integer> nodeIds = new HashMap<>();
+    private final HashMap<String, Node> nodes = new HashMap<>();
+    private final ArrayList<Road> roads = new ArrayList<>();
+    private final HashMap<String, Integer> nodeIds = new HashMap<>();
 
     private float scaleX = 0.5f;
     private float scaleZ = 0.5f;
 
-    private final float[] extremeX = new float[] {Float.MAX_VALUE, Float.MIN_VALUE}; // 0 - min, 1 - max
-    private final float[] extremeZ = new float[] {Float.MAX_VALUE, Float.MIN_VALUE};
+    private final float[] extremeX = new float[]{Float.MAX_VALUE, Float.MIN_VALUE}; // 0 - min, 1 - max
+    private final float[] extremeZ = new float[]{Float.MAX_VALUE, Float.MIN_VALUE};
 
     private Model model = null;
 
@@ -43,12 +44,11 @@ public class RoadLoader {
 
         try {
             Map<String, Element> result = p.parse(osmFile);
-            int counter = 0;
             for (String key : result.keySet()) {
                 Way way = isWay(result.get(key));
                 if (way != null) {
                     if (isRoad(way)) {
-                        ways.add(way);
+                        Node prev = null;
                         for (Node n : way.getNodes()) {
                             nodes.putIfAbsent(n.getId(), n);
                             if (n.getLat() < extremeX[0]) {
@@ -61,14 +61,16 @@ public class RoadLoader {
                             } else if (n.getLon() > extremeZ[1]) {
                                 extremeZ[1] = (float) n.getLon();
                             }
+                            if (prev != null) {
+                                roads.add(new Road(prev, n));
+                            }
+                            prev = n;
                         }
-                        counter++;
                     }
                 }
             }
             scaleX = 2 / (extremeX[1] - extremeX[0]);
             scaleZ = 2 / (extremeZ[1] - extremeZ[0]);
-            System.out.println(counter);
         } catch (IOException | SAXException e) {
             e.printStackTrace();
         }
@@ -82,7 +84,7 @@ public class RoadLoader {
         // vertices
         float[] vertexBuffer = new float[nodes.size() * 3];
         int i = 0;
-        for (String s: nodes.keySet()) {
+        for (String s : nodes.keySet()) {
             nodeIds.put(s, i);
             vertexBuffer[3 * i] = (float) (nodes.get(s).getLat() - extremeX[0]) * scaleX - 1;
             vertexBuffer[3 * i + 1] = 1f;
@@ -91,22 +93,12 @@ public class RoadLoader {
         }
         // indices
         List<Integer> indices = new ArrayList<>();
-        for (Way w : ways) {
-            List<Node> nodes2 = w.getNodes();
-            // make pairs for each two nodes that follow each other
-            Node prev = null;
-            for (Node n : w.getNodes()) {
-                if (prev == null) {
-                    prev = n;
-                    continue;
-                }
-                indices.add(nodeIds.get(prev.getId()));
-                indices.add(nodeIds.get(n.getId()));
-                prev = n;
-            }
+        for (Road r : roads) {
+            indices.add(nodeIds.get(r.getFirst().getId()));
+            indices.add(nodeIds.get(r.getLast().getId()));
         }
-        material.getMeshList().add(new Mesh(vertexBuffer, indices.stream().mapToInt(Integer::intValue).toArray(),
-                GL_LINES));
+
+        material.getMeshList().add(new Mesh(vertexBuffer, indices, GL_LINES));
 
         material.setDiffuseColor(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
 
