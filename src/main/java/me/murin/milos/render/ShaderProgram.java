@@ -1,6 +1,6 @@
 package me.murin.milos.render;
 
-import me.murin.milos.Utils;
+import me.murin.milos.utils.Utils;
 import org.lwjgl.opengl.GL30;
 
 import java.util.ArrayList;

@@ -7,6 +7,8 @@ import me.murin.milos.scene.Camera;
 import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
 import me.murin.milos.scene.Scene;
+import me.murin.milos.utils.InputManager;
+import me.murin.milos.utils.MouseInput;
 import org.joml.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
@@ -28,6 +30,8 @@ public class Main implements AppLogic {
     private Model mainModel;
     private Model dcelModel;
     private Model roadModel;
+
+    private boolean qFlag = false;
 
     public static void main(String[] args) {
 
@@ -56,6 +60,7 @@ public class Main implements AppLogic {
         RoadLoader rl = new RoadLoader(RES_PATH + "osm/map.osm");
         roadModel = rl.getModel();
         Entity en = addModelAndEntity(scene, roadModel, "roadEntity", true);
+        window.getInputManager().track(GLFW_KEY_Q);
     }
 
     public Entity addModelAndEntity(Scene scene, Model model, String entityId, boolean visible) {
@@ -69,23 +74,25 @@ public class Main implements AppLogic {
 
     @Override
     public void input(Window window, Scene scene, long diffTimeMillis) {
+        InputManager input = window.getInputManager();
         float move = diffTimeMillis * MOVEMENT_SPEED;
         Camera camera = scene.getCamera();
 
-        dcelVisible = window.isKeyPressed(GLFW_KEY_Q);
-        dcelModel.setVisible(dcelVisible);
-        mainModel.setVisible(!dcelVisible);
+        if (input.wasReleased(GLFW_KEY_Q)) {
+            dcelVisible = !dcelVisible;
+            dcelModel.setVisible(dcelVisible);
+            mainModel.setVisible(!dcelVisible);
+        }
 
-
-        if (window.isKeyPressed(GLFW_KEY_W)) {
+        if (input.isKeyPressed(GLFW_KEY_W)) {
             camera.moveCloser(move);
-        } else if (window.isKeyPressed(GLFW_KEY_S)) {
+        } else if (input.isKeyPressed(GLFW_KEY_S)) {
             camera.moveFurther(move);
         }
 
-        MouseInput input = window.getMouseInput();
-        if (input.isRightButtonPressed()) {
-            Vector2f displVec = input.getDisplVec();
+        MouseInput mInput = input.getMouseInput();
+        if (mInput.isRightButtonPressed()) {
+            Vector2f displVec = mInput.getDisplVec();
             camera.addRotation((float) Math.toRadians(displVec.x * MOUSE_SENSITIVITY),
                     (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
         }

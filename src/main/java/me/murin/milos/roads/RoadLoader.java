@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static me.murin.milos.Utils.isRoad;
-import static me.murin.milos.Utils.isWay;
+import static me.murin.milos.utils.Utils.isRoad;
+import static me.murin.milos.utils.Utils.isWay;
 import static org.lwjgl.opengl.GL11.GL_LINES;
 
 public class RoadLoader {

@@ -1,4 +1,4 @@
-package me.murin.milos;
+package me.murin.milos.utils;
 
 import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Way;

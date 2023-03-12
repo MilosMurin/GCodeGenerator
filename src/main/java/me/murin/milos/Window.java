@@ -1,12 +1,40 @@
 package me.murin.milos;
 
-import org.lwjgl.glfw.*;
+import me.murin.milos.utils.InputManager;
+import me.murin.milos.utils.MouseInput;
+import org.lwjgl.glfw.GLFWVidMode;
 
 import java.util.concurrent.Callable;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
+import static org.lwjgl.glfw.GLFW.glfwGetKey;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.opengl.GL11.GL_FALSE;
+import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
@@ -14,6 +42,7 @@ public class Window {
     private long handle;
 
     private MouseInput mouseInput;
+    private InputManager inputManager;
 
     private int width;
     private int height;
@@ -73,6 +102,7 @@ public class Window {
         height = arrHeight[0];
 
         this.mouseInput = new MouseInput(handle);
+        this.inputManager = new InputManager(handle);
     }
 
     public void cleanup() {
@@ -95,7 +125,7 @@ public class Window {
     public void pollEvents() {
         // processes events
         glfwPollEvents();
-        mouseInput.input();
+        inputManager.tick();
     }
 
     public int getWidth() {
@@ -114,8 +144,8 @@ public class Window {
         return glfwGetKey(handle, key) == GLFW_PRESS;
     }
 
-    public boolean wasKeyReleased(int key) {
-        return glfwGetKey(handle, key) == GLFW_RELEASE;
+    public InputManager getInputManager() {
+        return inputManager;
     }
 
     protected void resized(int width, int height) {
