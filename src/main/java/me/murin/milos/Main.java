@@ -31,11 +31,8 @@ public class Main implements AppLogic {
     private Model dcelModel;
     private Model roadModel;
 
-    private boolean qFlag = false;
-
     public static void main(String[] args) {
 
-        // TODO: Create a plane from a way
         // TODO: Make intersections for all roads -> create a model of the new roads
         Main main = new Main();
         Engine gameEng = new Engine("GCodeGenerator", new Window.WindowOptions(), main);
@@ -49,6 +46,7 @@ public class Main implements AppLogic {
 
     @Override
     public void init(Window window, Scene scene, Render render) {
+        window.getInputManager().track(GLFW_KEY_Q);
 
         mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL_PATH + TEST_PATH,
                 scene.getTextureCache());
@@ -60,7 +58,10 @@ public class Main implements AppLogic {
         RoadLoader rl = new RoadLoader(RES_PATH + "osm/map.osm");
         roadModel = rl.getModel();
         Entity en = addModelAndEntity(scene, roadModel, "roadEntity", true);
-        window.getInputManager().track(GLFW_KEY_Q);
+
+//        var intersectorator = new Intersectorator(rl.getStarts(), mainModel.getDcel());
+//        intersectorator.intersect();
+
     }
 
     public Entity addModelAndEntity(Scene scene, Model model, String entityId, boolean visible) {

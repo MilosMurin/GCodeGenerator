@@ -17,6 +17,8 @@ public class Model {
 
     private boolean visible = true;
 
+    private List<DoublyConnectedEdgeList> dcels;
+
     public Model(String id, List<Material> materialList) {
         this.id = id;
         this.materialList = materialList;
@@ -52,7 +54,7 @@ public class Model {
     }
 
     public void createDcelModel(List<DoublyConnectedEdgeList> dcels) {
-
+        this.dcels = dcels;
         List<Material> materials = new ArrayList<>();
         Material material = new Material();
 
@@ -67,4 +69,12 @@ public class Model {
     public Model getDcelModel() {
         return dcelModel;
     }
+
+    public DoublyConnectedEdgeList getDcel() {
+        return dcels.get(0);
+    }
+
+
+
+
 }

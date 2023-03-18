@@ -1,6 +1,7 @@
 package me.murin.milos.dcel;
 
 import me.murin.milos.geometry.Line;
+import me.murin.milos.geometry.Road;
 
 public class Face {
 
@@ -77,5 +78,9 @@ public class Face {
 
     public Line intersection(Face other) {
         return intersection(other.a, other.b, other.c, other.d);
+    }
+
+    public Line intersection(Road other) {
+        return intersection(other.getA(), other.getB(), other.getC(), other.getD());
     }
 }

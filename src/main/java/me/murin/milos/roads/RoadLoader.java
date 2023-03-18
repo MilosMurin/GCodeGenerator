@@ -28,6 +28,7 @@ public class RoadLoader {
 
     private final HashMap<String, Node> nodes = new HashMap<>();
     private final ArrayList<Road> roads = new ArrayList<>();
+    private final ArrayList<Road> starts = new ArrayList<>();
     private final HashMap<String, Integer> nodeIds = new HashMap<>();
 
     private float scaleX = 0.5f;
@@ -49,6 +50,7 @@ public class RoadLoader {
                 if (way != null) {
                     if (isRoad(way)) {
                         Node prev = null;
+                        Road prevRoad = null;
                         for (Node n : way.getNodes()) {
                             nodes.putIfAbsent(n.getId(), n);
                             if (n.getLat() < extremeX[0]) {
@@ -62,7 +64,14 @@ public class RoadLoader {
                                 extremeZ[1] = (float) n.getLon();
                             }
                             if (prev != null) {
-                                roads.add(new Road(prev, n));
+                                Road r = new Road(prev, n);
+                                roads.add(r);
+                                if (prevRoad != null) {
+                                    prevRoad.setNext(r);
+                                } else {
+                                    starts.add(r);
+                                }
+                                prevRoad = r;
                             }
                             prev = n;
                         }
@@ -113,4 +122,7 @@ public class RoadLoader {
         return model;
     }
 
+    public ArrayList<Road> getStarts() {
+        return starts;
+    }
 }
