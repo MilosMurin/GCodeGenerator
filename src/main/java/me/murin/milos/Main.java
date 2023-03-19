@@ -2,7 +2,8 @@ package me.murin.milos;
 
 import me.murin.milos.render.Model;
 import me.murin.milos.render.Render;
-import me.murin.milos.roads.RoadLoader;
+import me.murin.milos.roads.RoadList;
+import me.murin.milos.roads.loaders.RoadLoader;
 import me.murin.milos.scene.Camera;
 import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
@@ -56,7 +57,8 @@ public class Main implements AppLogic {
         addModelAndEntity(scene, dcelModel, "dcelEntity", dcelVisible);
 
         RoadLoader rl = new RoadLoader(RES_PATH + "osm/map.osm");
-        roadModel = rl.getModel();
+        RoadList roadList = rl.getRoadList();
+        roadModel = roadList.getModel();
         Entity en = addModelAndEntity(scene, roadModel, "roadEntity", true);
 
 //        var intersectorator = new Intersectorator(rl.getStarts(), mainModel.getDcel());

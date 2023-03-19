@@ -1,28 +1,28 @@
 package me.murin.milos.utils;
 
+import info.pavie.basicosmparser.model.Node;
 import me.murin.milos.dcel.DoublyConnectedEdgeList;
 import me.murin.milos.dcel.Face;
-import me.murin.milos.geometry.Line;
+import me.murin.milos.geometry.LineList;
 import me.murin.milos.geometry.Road;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Intersectorator {
 
     private List<Road> starts;
     private DoublyConnectedEdgeList dcel;
-    private List<Line> result;
+    private LineList result;
 
     public Intersectorator(List<Road> starts, DoublyConnectedEdgeList dcel) {
         this.starts = starts;
         this.dcel = dcel;
-        this.result = new ArrayList<>();
+        this.result = new LineList();
     }
 
     public void intersect() {
         for (Road start : starts) {
-            // get the first face it intersects with TODO: ask if theres a better way but i dont think so+
+            // get the first face it intersects with
             // do:
             // 1.make intersection of road plane and face plane
             // 2.set the bounds of the line to the starting point of the road and
@@ -38,12 +38,14 @@ public class Intersectorator {
             // note: make also a list of nodes (that remember the lines going out of them and into them) for the
             // traveling salesman problem
 
-            Face face = dcel.getFaceForPoint((float) start.getFirst().getLat(), (float) start.getFirst().getLon());
+            Face face = dcel.getFaceForPoint(Utils.getCoordFromNode(start.getFirst(), Axis.X),
+                    Utils.getCoordFromNode(start.getFirst(), Axis.Z));
             Road road = start;
+            Node end = road.getLast();
             while (road.hasNext()) {
                 var line = face.intersection(road);
                 // test if the road ending is within the face
-                boolean endInFace = false;
+                boolean endInFace = face.isPointInFace(road.getLast());
                 // if endInFace is false set the end point of the line to the intersection
                 if (endInFace) {
                     // set end bound to end of road
@@ -58,7 +60,7 @@ public class Intersectorator {
         }
     }
 
-    public List<Line> getResult() {
+    public LineList getResult() {
         if (result.isEmpty()) {
             intersect();
         }

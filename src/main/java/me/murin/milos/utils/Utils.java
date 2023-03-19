@@ -1,6 +1,7 @@
 package me.murin.milos.utils;
 
 import info.pavie.basicosmparser.model.Element;
+import info.pavie.basicosmparser.model.Node;
 import info.pavie.basicosmparser.model.Way;
 
 import java.io.IOException;
@@ -45,5 +46,24 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    /**
+     * Helper method to not make mistakes :D
+     * Converts longitude and latitude to an axis
+     * X - Latitude
+     * Y - DOES NOT EXIST throws an error
+     * Z - Longitude
+     *
+     * @param node the node to get the lat and lon from
+     * @param axis the axis to get
+     * @return a float containing coordinate on the given axis
+     */
+    public static float getCoordFromNode(Node node, Axis axis) {
+        return switch (axis) {
+            case X -> (float) node.getLat();
+            case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
+            case Z -> (float) node.getLon();
+        };
     }
 }

@@ -1,7 +1,10 @@
 package me.murin.milos.dcel;
 
+import info.pavie.basicosmparser.model.Node;
 import me.murin.milos.geometry.Line;
 import me.murin.milos.geometry.Road;
+import me.murin.milos.utils.Axis;
+import me.murin.milos.utils.Utils;
 
 public class Face {
 
@@ -53,6 +56,10 @@ public class Face {
         this.b = a3 * b1 - a1 * b3;
         this.c = a1 * b2 - a2 * b1;
         this.d = -(this.a * p1.getX() + this.b * p1.getY() + this.b * p1.getZ());
+    }
+
+    public boolean isPointInFace(Node node) {
+        return isPointInFace(Utils.getCoordFromNode(node, Axis.X), Utils.getCoordFromNode(node, Axis.Z));
     }
 
     public boolean isPointInFace(float x, float z) {
