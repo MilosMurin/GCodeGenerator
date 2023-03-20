@@ -1,5 +1,7 @@
 package me.murin.milos.dcel;
 
+import me.murin.milos.geometry.Line;
+
 public class Edge {
 
     private int id;
@@ -14,6 +16,8 @@ public class Edge {
     private float b;
     private float c;
 
+    private Line line;
+
     private boolean greater;
     private boolean greaterSet = false;
 
@@ -26,6 +30,7 @@ public class Edge {
 
     /**
      * Update the id to an id gathered from the twin edge
+     *
      * @param twinEdge the twin edge to this edge
      */
     public void updateIdWithTwin(Edge twinEdge) {
@@ -79,11 +84,18 @@ public class Edge {
 
     public void setNextEdge(Edge nextEdge) {
         this.nextEdge = nextEdge;
+        Vertex nextOrigin = nextEdge.getOrigin();
 
         // for analytical geometry
-        this.a = nextEdge.getOrigin().getZ() - this.origin.getZ();
-        this.b = -(nextEdge.getOrigin().getX() - this.origin.getX());
+        this.a = nextOrigin.getZ() - this.origin.getZ();
+        this.b = -(nextOrigin.getX() - this.origin.getX());
         this.c = -(this.a * this.origin.getX() + this.b * this.origin.getZ());
+
+
+        line = new Line(this.origin.getX(), this.origin.getY(), this.origin.getZ(), (nextOrigin.getX() - this.origin.getX()),
+                (nextOrigin.getY() - this.origin.getY()), (nextOrigin.getZ() - this.origin.getZ()));
+        line.setStartPoint(this.origin);
+        line.setEndPoint(nextOrigin);
     }
 
     public Edge getPrevEdge() {
@@ -99,7 +111,9 @@ public class Edge {
     }
 
     public float testPoint(float x, float z) {
-        return a * x + b * z + c;
+        float v = a * x + b * z + c;
+//        System.out.printf("Testing point(%f, %f) in plane (%f, %f, %f) %s %f\n", x, z, a, b, c, greater ? ">" : "<", v);
+        return v;
     }
 
     public void setGreater(boolean greater) {
@@ -117,5 +131,9 @@ public class Edge {
             }
         }
         return false;
+    }
+
+    public Vertex intersect(Line line) {
+        return this.line.intersect(line);
     }
 }

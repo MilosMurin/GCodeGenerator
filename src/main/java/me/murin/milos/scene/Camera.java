@@ -25,6 +25,7 @@ public class Camera {
     }
 
     public void moveFurther(float inc) {
+        // TODO: make custom calculations based on rotation
         viewMatrix.positiveY(up).mul(inc);
         position.sub(up);
         recalculate();

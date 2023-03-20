@@ -9,6 +9,7 @@ import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
 import me.murin.milos.scene.Scene;
 import me.murin.milos.utils.InputManager;
+import me.murin.milos.utils.Intersectorator;
 import me.murin.milos.utils.MouseInput;
 import org.joml.Vector2f;
 
@@ -23,6 +24,7 @@ public class Main implements AppLogic {
     private static final String CUBE_PATH = "cube/cube.obj";
     private static final String TEST_PATH = "test/test.obj";
     private static final String TESTFULL_PATH = "test/testFull.obj";
+    private static final String TESTSMALL_PATH = "test/testSmall.obj";
 
     private static final float MOUSE_SENSITIVITY = 0.3f;
     private static final float MOVEMENT_SPEED = 0.01f;
@@ -31,10 +33,11 @@ public class Main implements AppLogic {
     private Model mainModel;
     private Model dcelModel;
     private Model roadModel;
+    private Model intersectModel;
 
     public static void main(String[] args) {
 
-        // TODO: Make intersections for all roads -> create a model of the new roads
+        // TODO: Make intersections for all roads
         Main main = new Main();
         Engine gameEng = new Engine("GCodeGenerator", new Window.WindowOptions(), main);
         gameEng.start();
@@ -49,7 +52,7 @@ public class Main implements AppLogic {
     public void init(Window window, Scene scene, Render render) {
         window.getInputManager().track(GLFW_KEY_Q);
 
-        mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL_PATH + TEST_PATH,
+        mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL_PATH + TESTSMALL_PATH,
                 scene.getTextureCache());
         addModelAndEntity(scene, mainModel, "mainEntity", true);
 
@@ -61,9 +64,10 @@ public class Main implements AppLogic {
         roadModel = roadList.getModel();
         Entity en = addModelAndEntity(scene, roadModel, "roadEntity", true);
 
-//        var intersectorator = new Intersectorator(rl.getStarts(), mainModel.getDcel());
-//        intersectorator.intersect();
-
+        var intersectorator = new Intersectorator(roadList.getStarts(), mainModel.getDcel());
+        intersectorator.intersect();
+        intersectModel = intersectorator.getResult().getModel();
+        addModelAndEntity(scene, intersectModel, "intersectEntity", true);
     }
 
     public Entity addModelAndEntity(Scene scene, Model model, String entityId, boolean visible) {

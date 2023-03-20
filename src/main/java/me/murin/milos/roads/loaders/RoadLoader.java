@@ -16,8 +16,6 @@ import static me.murin.milos.utils.Utils.isWay;
 
 public class RoadLoader extends RoadImporter {
 
-
-
     public RoadLoader(String path) {
         OSMParser p = new OSMParser();
         File osmFile = new File(path);
@@ -46,6 +44,7 @@ public class RoadLoader extends RoadImporter {
                     }
                 }
             }
+            roadList.adjustToScale();
         } catch (IOException | SAXException e) {
             e.printStackTrace();
         }

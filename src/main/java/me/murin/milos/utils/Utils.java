@@ -66,4 +66,13 @@ public class Utils {
             case Z -> (float) node.getLon();
         };
     }
+
+    public static void adjustCoordOnAxis(Node node, Axis axis, float min, float scale) {
+        switch (axis) {
+            // TODO: Change -1 based on the origin position
+            case X -> node.setLat((node.getLat() - min) * scale - 1); // -1 is for origin position
+            case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
+            case Z -> node.setLon((node.getLon() - min) * scale - 1);
+        }
+    }
 }

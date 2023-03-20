@@ -2,23 +2,40 @@ package me.murin.milos.geometry;
 
 import me.murin.milos.dcel.Vertex;
 import me.murin.milos.render.Mesh;
+import me.murin.milos.utils.Axis;
 import me.murin.milos.utils.ListWithModel;
+import me.murin.milos.utils.Utils;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.lwjgl.opengl.GL11.GL_LINES;
 
 public class LineList extends ListWithModel {
 
-    private List<Vertex> vertices = new ArrayList<>();
+    private Set<Vertex> vertices = new HashSet<>();
+    private HashMap<Vertex, Integer> vertexIds = new HashMap<>();
     private List<Line> lines = new ArrayList<>();
+
+    private int vertexId = 0;
 
     private OriginPosition originPosition;
 
     // 00 location - midle
     // max size - width, height
+
+    public void addVertex(Vertex vertex) {
+        vertices.add(vertex);
+        vertexIds.put(vertex, vertexId++);
+    }
+
+    public void addLine(Line startLine) {
+        lines.add(startLine);
+    }
 
     public void changeSize(float width, float length) {
         if (width <= 0 || length <= 0) {
@@ -51,15 +68,27 @@ public class LineList extends ListWithModel {
     protected Mesh getMesh() {
         // vertices
         float[] vertexBuffer = new float[vertices.size() * 3];
-//        for (String s : nodeIds.keySet()) {
-//
-//
-//        }
+        for (Vertex v : vertexIds.keySet()) {
+            int id = vertexIds.get(v);
+            vertexBuffer[3 * id] = v.getX(); // -1 is for origin position
+            vertexBuffer[3 * id + 1] = v.getY();
+            vertexBuffer[3 * id + 2] = v.getZ();
+
+        }
 
         // indices
         List<Integer> indices = new ArrayList<>();
         for (Line l : lines) {
             // fill indices
+            Line current = l;
+            indices.add(vertexIds.get(l.getStartPoint()));
+            indices.add(vertexIds.get(l.getEndPoint()));
+
+            while (current.hasNext()) {
+                current = current.getNext();
+                indices.add(vertexIds.get(l.getStartPoint()));
+                indices.add(vertexIds.get(l.getEndPoint()));
+            }
         }
 
         return new Mesh(vertexBuffer, indices, GL_LINES);

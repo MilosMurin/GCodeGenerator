@@ -1,8 +1,10 @@
 package me.murin.milos.utils;
 
-import info.pavie.basicosmparser.model.Node;
 import me.murin.milos.dcel.DoublyConnectedEdgeList;
+import me.murin.milos.dcel.Edge;
 import me.murin.milos.dcel.Face;
+import me.murin.milos.dcel.Vertex;
+import me.murin.milos.geometry.Line;
 import me.murin.milos.geometry.LineList;
 import me.murin.milos.geometry.Road;
 
@@ -40,22 +42,63 @@ public class Intersectorator {
 
             Face face = dcel.getFaceForPoint(Utils.getCoordFromNode(start.getFirst(), Axis.X),
                     Utils.getCoordFromNode(start.getFirst(), Axis.Z));
+            if (face == null) {
+                System.out.printf("Point (%f, %f) didnt find a face", Utils.getCoordFromNode(start.getFirst(),
+                        Axis.X), Utils.getCoordFromNode(start.getFirst(), Axis.Z));
+                continue;
+            }
             Road road = start;
-            Node end = road.getLast();
-            while (road.hasNext()) {
+            Vertex end = null;
+            Line prev = null;
+            while (road.hasNext()) { // will not work if the last road goes through more faces
                 var line = face.intersection(road);
+                if (end == null) { // if this is the first road set the starting point as the start of the road
+                    result.addVertex(line.setStartPoint(road.getFirst()));
+                } else { // othervise set it as the ending point of the previous road
+                    line.setStartPoint(end);
+                }
                 // test if the road ending is within the face
                 boolean endInFace = face.isPointInFace(road.getLast());
                 // if endInFace is false set the end point of the line to the intersection
+                // set end bound to end of road
+                line.setEndPoint(road.getLast()); // if not end in face this will get rewritten
                 if (endInFace) {
-                    // set end bound to end of road
+                    // set the ending point
+                    end = line.getPointOnLine(road.getLast());
                     // get next road
                     road = road.getNext();
                 } else {
-                    // set end bound to the intersection with an edge of tha face
-                    // set next face based on the edge that it intersects with
+                    Edge intersect = face.getFirstEdge();
+                    // set end bound to the intersection with an edge of the face
                     // need to find out what side to go to
+                    Vertex v = intersect.intersect(line);
+                    while (!line.isWithinBounds(v)) {
+                        intersect = intersect.getNextEdge();
+                        if (intersect == face.getFirstEdge()) {
+                            break;
+                        }
+                        v = intersect.intersect(line);
+                    }
+                    if (v == null) {
+                        throw new IllegalStateException("The line has no intersections with the edge?????");
+                    }
+                    line.setEndPoint(v);
+                    end = v;
+                    // set next face based on the edge that it intersects with
+                    Edge twin = intersect.getTwinEdge();
+                    if (twin == null) {
+                        // this should mean that we stepped out of the bounds of the base model
+                        break;
+                    }
+                    face = twin.getIncidentFace();
                 }
+                result.addVertex(end);
+                if (prev != null) {
+                    prev.setNext(line);
+                } else {
+                    result.addLine(line);
+                }
+                prev = line;
             }
         }
     }

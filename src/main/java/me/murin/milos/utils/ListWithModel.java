@@ -11,8 +11,9 @@ import java.util.List;
 public abstract class ListWithModel {
 
 
-    private final float[] minimums = new float[3]; // 0 - x, 1 - y, 2 - z
-    private final float[] maximums = new float[3]; // 0 - x, 1 - y, 2 - z
+    private final float[] minimums = new float[] {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE}; // 0 - x, 1 - y, 2 - z
+    private final float[] maximums = new float[] {Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE}; // 0 - x, 1 - y,
+    // 2 - z
 
     protected Model model;
     private boolean modelValid = false;

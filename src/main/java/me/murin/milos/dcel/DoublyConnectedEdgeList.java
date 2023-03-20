@@ -116,7 +116,9 @@ public class DoublyConnectedEdgeList {
             for (int i = 0; i < 2; i++) {
                 current = current.getNextEdge();
                 indices.add(current.getOrigin().getId());
+                indices.add(current.getOrigin().getId());
             }
+            indices.add(f.getFirstEdge().getOrigin().getId());
         }
         return new Mesh(vertexBuffer, indices, GL_LINES);
     }

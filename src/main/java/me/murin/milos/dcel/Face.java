@@ -62,14 +62,25 @@ public class Face {
         return isPointInFace(Utils.getCoordFromNode(node, Axis.X), Utils.getCoordFromNode(node, Axis.Z));
     }
 
+    public Vertex instersect(Line line) {
+        // the line should be crated from a point of a road
+        float top = -(a * line.getX0() + b * line.getY0() + c * line.getZ0() + d);
+        float bottom = a * line.getTx() + b * line.getTy() + c * line.getTz();
+        if (bottom == 0) {
+            return null; // intersection is the line or none
+        }
+        return line.getPoint(top / bottom);
+    }
+
     public boolean isPointInFace(float x, float z) {
         boolean isIn = true;
-        int counter = 0;
         Edge current = firstEdge;
-        while (isIn && counter < 3) {
+        while (isIn) {
             isIn = current.isInHalfPlane(x, z);
             current = current.getNextEdge();
-            counter++;
+            if (current == firstEdge) {
+                break;
+            }
         }
         return isIn;
     }

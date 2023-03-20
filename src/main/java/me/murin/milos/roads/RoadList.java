@@ -21,16 +21,11 @@ public class RoadList extends ListWithModel {
     private final HashMap<String, Integer> nodeIds = new HashMap<>();
     private int nextNodeId = 0;
 
-    private float scaleX = 0.5f;
-    private float scaleZ = 0.5f;
-
     public void addNode(Node n) {
         nodes.putIfAbsent(n.getId(), n);
         testExtremes(Axis.X, Utils.getCoordFromNode(n, Axis.X));
         testExtremes(Axis.Z, Utils.getCoordFromNode(n, Axis.Z));
 
-        scaleX = 2 / (getMax(Axis.X) - getMin(Axis.X));
-        scaleZ = 2 / (getMax(Axis.Z) - getMin(Axis.Z));
         if (!nodeIds.containsKey(n.getId())) {
             nodeIds.put(n.getId(), nextNodeId++);
         }
@@ -42,6 +37,17 @@ public class RoadList extends ListWithModel {
         invalidateModel();
     }
 
+    public void adjustToScale() {
+        // TODO: Chnage the 2 to the size of the base model
+        float scaleX = 2 / (getMax(Axis.X) - getMin(Axis.X));
+        float scaleZ = 2 / (getMax(Axis.Z) - getMin(Axis.Z));
+        for (String key : nodes.keySet()) {
+            Node node = nodes.get(key);
+            Utils.adjustCoordOnAxis(node, Axis.X, getMin(Axis.X), scaleX);
+            Utils.adjustCoordOnAxis(node, Axis.Z, getMin(Axis.Z), scaleZ);
+        }
+    }
+
 
     @Override
     protected Mesh getMesh() {
@@ -50,9 +56,9 @@ public class RoadList extends ListWithModel {
         for (String s : nodeIds.keySet()) {
             int id = nodeIds.get(s);
             Node node = nodes.get(s);
-            vertexBuffer[3 * id] = (Utils.getCoordFromNode(node, Axis.X) - getMin(Axis.X)) * scaleX - 1;
+            vertexBuffer[3 * id] = Utils.getCoordFromNode(node, Axis.X);
             vertexBuffer[3 * id + 1] = 1f;
-            vertexBuffer[3 * id + 2] = (Utils.getCoordFromNode(node, Axis.Z) - getMin(Axis.Z)) * scaleZ - 1;
+            vertexBuffer[3 * id + 2] = Utils.getCoordFromNode(node, Axis.Z);
         }
 
         // indices
@@ -70,6 +76,10 @@ public class RoadList extends ListWithModel {
         }
 
         return new Mesh(vertexBuffer, indices, GL_LINES);
+    }
+
+    public ArrayList<Road> getStarts() {
+        return starts;
     }
 
     @Override
