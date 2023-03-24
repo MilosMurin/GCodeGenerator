@@ -11,8 +11,9 @@ import java.util.List;
 public abstract class ListWithModel {
 
 
-    private final float[] minimums = new float[] {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE}; // 0 - x, 1 - y, 2 - z
-    private final float[] maximums = new float[] {Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE}; // 0 - x, 1 - y,
+    private final double[] minimums = new double[] {Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE}; // 0 - x, 1 - y,
+    // 2 - z
+    private final double[] maximums = new double[] {Double.MIN_VALUE, Double.MIN_VALUE, Double.MIN_VALUE}; // 0 - x, 1 - y,
     // 2 - z
 
     protected Model model;
@@ -41,7 +42,7 @@ public abstract class ListWithModel {
         this.validateModel();
     }
 
-    protected void testExtremes(Axis axis, float amount) {
+    protected void testExtremes(Axis axis, double amount) {
         if (amount < getMin(axis)) {
             minimums[axis.getId()] = amount;
         } else if (amount > getMax(axis)) {
@@ -49,11 +50,11 @@ public abstract class ListWithModel {
         }
     }
 
-    protected float getMax(Axis axis) {
+    protected double getMax(Axis axis) {
         return maximums[axis.getId()];
     }
 
-    protected float getMin(Axis axis) {
+    protected double getMin(Axis axis) {
         return minimums[axis.getId()];
     }
 

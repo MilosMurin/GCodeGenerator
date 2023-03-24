@@ -26,6 +26,9 @@ public class Main implements AppLogic {
     private static final String TESTFULL_PATH = "test/testFull.obj";
     private static final String TESTSMALL_PATH = "test/testSmall.obj";
 
+    private static final String MAP_OSM = "osm/map.osm";
+    private static final String TEST_OSM = "osm/test.osm";
+
     private static final float MOUSE_SENSITIVITY = 0.3f;
     private static final float MOVEMENT_SPEED = 0.01f;
 
@@ -59,7 +62,7 @@ public class Main implements AppLogic {
         dcelModel = mainModel.getDcelModel();
         addModelAndEntity(scene, dcelModel, "dcelEntity", dcelVisible);
 
-        RoadLoader rl = new RoadLoader(RES_PATH + "osm/map.osm");
+        RoadLoader rl = new RoadLoader(RES_PATH + TEST_OSM);
         RoadList roadList = rl.getRoadList();
         roadModel = roadList.getModel();
         Entity en = addModelAndEntity(scene, roadModel, "roadEntity", true);

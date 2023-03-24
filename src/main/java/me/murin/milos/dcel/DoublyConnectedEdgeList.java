@@ -14,8 +14,8 @@ public class DoublyConnectedEdgeList {
     private final List<Vertex> vertices;
     private final List<Face> faces;
 
-    private final float[] extremeX = new float[] {Float.MAX_VALUE, Float.MIN_VALUE}; // 0 - min, 1 - max
-    private final float[] extremeZ = new float[] {Float.MAX_VALUE, Float.MIN_VALUE};
+    private final double[] extremeX = new double[] {Double.MAX_VALUE, Double.MIN_VALUE}; // 0 - min, 1 - max
+    private final double[] extremeZ = new double[] {Double.MAX_VALUE, Double.MIN_VALUE};
 
     public DoublyConnectedEdgeList() {
         this.edges = new ArrayList<>();
@@ -37,7 +37,7 @@ public class DoublyConnectedEdgeList {
         }
     }
 
-    public float getExtremeX(boolean max) {
+    public double getExtremeX(boolean max) {
         if (max) {
             return extremeX[1];
         } else {
@@ -45,7 +45,7 @@ public class DoublyConnectedEdgeList {
         }
     }
 
-    public float getExtremeZ(boolean max) {
+    public double getExtremeZ(boolean max) {
         if (max) {
             return extremeZ[1];
         } else {
@@ -91,7 +91,7 @@ public class DoublyConnectedEdgeList {
         return this.faces.get(pos);
     }
 
-    public Face getFaceForPoint(float x, float z) {
+    public Face getFaceForPoint(double x, double z) {
         for (Face f : faces) {
             if (f.isPointInFace(x, z)) {
                 return f;
@@ -105,7 +105,7 @@ public class DoublyConnectedEdgeList {
         float[] vertexBuffer = new float[vertices.size() * 3];
         for (int i = 0; i < vertices.size(); i++) {
             for (int j = 0; j < 3; j++) {
-                vertexBuffer[3 * i + j] = vertices.get(i).getCoord(j);
+                vertexBuffer[3 * i + j] = (float) vertices.get(i).getCoord(j);
             }
         }
         // indices

@@ -39,8 +39,8 @@ public class RoadList extends ListWithModel {
 
     public void adjustToScale() {
         // TODO: Chnage the 2 to the size of the base model
-        float scaleX = 2 / (getMax(Axis.X) - getMin(Axis.X));
-        float scaleZ = 2 / (getMax(Axis.Z) - getMin(Axis.Z));
+        double scaleX = 2 / (getMax(Axis.X) - getMin(Axis.X));
+        double scaleZ = 2 / (getMax(Axis.Z) - getMin(Axis.Z));
         for (String key : nodes.keySet()) {
             Node node = nodes.get(key);
             Utils.adjustCoordOnAxis(node, Axis.X, getMin(Axis.X), scaleX);
@@ -56,9 +56,9 @@ public class RoadList extends ListWithModel {
         for (String s : nodeIds.keySet()) {
             int id = nodeIds.get(s);
             Node node = nodes.get(s);
-            vertexBuffer[3 * id] = Utils.getCoordFromNode(node, Axis.X);
+            vertexBuffer[3 * id] = (float) Utils.getCoordFromNode(node, Axis.X);
             vertexBuffer[3 * id + 1] = 1f;
-            vertexBuffer[3 * id + 2] = Utils.getCoordFromNode(node, Axis.Z);
+            vertexBuffer[3 * id + 2] = (float) Utils.getCoordFromNode(node, Axis.Z);
         }
 
         // indices

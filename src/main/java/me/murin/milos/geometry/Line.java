@@ -10,19 +10,19 @@ import me.murin.milos.utils.Utils;
  */
 public class Line {
 
-    private final float x0;
-    private final float y0;
-    private final float z0;
-    private final float tx;
-    private final float ty;
-    private final float tz;
+    private final double x0;
+    private final double y0;
+    private final double z0;
+    private final double tx;
+    private final double ty;
+    private final double tz;
 
-    private float tStart = Float.MAX_VALUE;
-    private float tEnd = Float.MIN_VALUE;
+    private double tStart = Double.MAX_VALUE;
+    private double tEnd = Double.MIN_VALUE;
 
     private Line next;
 
-    public Line(float pointX, float pointY, float pointZ, float vectorX, float vectorY, float vectorZ) {
+    public Line(double pointX, double pointY, double pointZ, double vectorX, double vectorY, double vectorZ) {
         this.x0 = pointX;
         this.y0 = pointY;
         this.z0 = pointZ;
@@ -31,7 +31,7 @@ public class Line {
         this.tz = vectorZ;
     }
 
-    public Line(float a1, float b1, float c1, float d1, float a2, float b2, float c2, float d2) {
+    public Line(double a1, double b1, double c1, double d1, double a2, double b2, double c2, double d2) {
         // b2 should always be 0 because it is a vertical plane
         if (b1 == 0) {
             throw new IllegalArgumentException("First plane cannot be vertical!");
@@ -40,28 +40,51 @@ public class Line {
             throw new IllegalArgumentException("Second plane has to be vertical!");
         }
 
-        this.y0 = (a2 * d1 - a1 * d2) / (-a2 * b1);
-        this.ty = (a2 * c1 - a1 * c2) / (-a2 * b1);
-        this.x0 = (-d1 - b1 * y0) / a1;
-        this.tx = (-c1) / (a1);
-
-        this.z0 = 0;
-        this.tz = 1;
+        if (a2 == 0) {
+            if (c2 == 0) {
+                throw new IllegalArgumentException("WTF is even happening! How did the plane end up in a form d=0??");
+            }
+            this.z0 = -(d2 / c2);
+            this.tz = 0;
+            if (a1 == 0) {
+                this.ty = 0;
+                this.y0 = -((c1 * d2) / (b1 * c2) + d1 / b1);
+                this.tx = 0;
+                this.x0 = 0;
+            } else {
+                this.ty = 1;
+                this.y0 = 0;
+                this.tx = -((c2 * b1) / (a1 * c2));
+                this.x0 = (c1 * d2 - c2 * d1) / (a1 * c2);
+            }
+        } else {
+            // a2 and b1 != 0
+            this.x0 = -(d2 / a2);
+            this.tx = -(c2 / a2);
+            this.ty = (a1 * c2 - a2 * c1) / (a2 * b1);
+            this.y0 = (a1 * d2 - a2 * d1) / (a2 * b1);
+            this.z0 = 0;
+            this.tz = 1;
+        }
     }
 
-    public float getT(Vertex vertex) {
+    public double getT(Vertex vertex) {
 
-        float t = tx != 0 ? getTForX(vertex.getX()) : ty != 0 ? getTForY(vertex.getY()) : tz != 0 ?
+        double t = tx != 0 ? getTForX(vertex.getX()) : ty != 0 ? getTForY(vertex.getY()) : tz != 0 ?
                 getTForZ(vertex.getZ()) : 0;
         if (isVertexInLine(vertex, t)) {
             return t;
         } else {
+            System.out.printf("Line:\nx=%f+%ft\ny=%f+%ft\nz=%f+%ft\n", x0, tx, y0, ty, z0, tz);
+            System.out.printf("Point: (%f, %f, %f)\n", vertex.getX(), vertex.getY(), vertex.getZ());
+            System.out.printf("t: %f\n", t);
             throw new IllegalArgumentException("Cannot set bounds with vertices that dont belong to the line!");
         }
     }
 
-    public boolean isVertexInLine(Vertex v, float t) {
-        return (v.getX() == x0 + tx * t) && (v.getY() == y0 + ty * t) && (v.getZ() == z0 + tz * t);
+    public boolean isVertexInLine(Vertex v, double t) {
+        return Utils.isAlmostEqual(v.getX(), x0 + tx * t) && Utils.isAlmostEqual(v.getY(), y0 + ty * t) &&
+                Utils.isAlmostEqual(v.getZ(), z0 + tz * t);
     }
 
     public boolean isVertexInLine(Vertex v) {
@@ -73,23 +96,24 @@ public class Line {
         }
     }
 
-    private float getTForX(float x) {
+    private double getTForX(double x) {
         return (x - x0) / tx;
     }
 
-    private float getTForY(float y) {
+    private double getTForY(double y) {
         return (y - y0) / ty;
     }
 
-    private float getTForZ(float z) {
+    private double getTForZ(double z) {
         return (z - z0) / tz;
     }
 
-    public Vertex getPoint(float t) {
-        if (!(t <= tEnd && t >= tStart) || !(t >= tEnd && t <= tStart)) {
+    public Vertex getPoint(double t) {
+        if ((t >= tStart && t <= tEnd) || (t <= tStart && t >= tEnd)) {
+            return new Vertex(x0 + tx * t, y0 + ty * t, z0 + tz * t);
+        } else {
             throw new IllegalArgumentException("Parameter \"t\" is out of bounds of this line");
         }
-        return new Vertex(x0 + tx * t, y0 + ty * t, z0 + tz * t);
     }
 
     public Vertex getStartPoint() {
@@ -109,7 +133,7 @@ public class Line {
     }
 
     private Vertex setPoint(Node point, boolean start) {
-        float xt = getXtForNode(point);
+        double xt = getXtForNode(point);
         // calculate y
         if (start) {
             tStart = xt;
@@ -119,21 +143,22 @@ public class Line {
         return getPoint(xt);
     }
 
-    public float getXtForNode(Node node) {
-        float x = Utils.getCoordFromNode(node, Axis.X);
-        float z = Utils.getCoordFromNode(node, Axis.Z);
-        float xt = getTForX(x);
-        float zt = getTForZ(z);
-        if (xt != zt) {
+    public double getXtForNode(Node node) {
+        double x = Utils.getCoordFromNode(node, Axis.X);
+        double z = Utils.getCoordFromNode(node, Axis.Z);
+        double xt = getTForX(x);
+        double zt = getTForZ(z);
+        if (!Utils.isAlmostEqual(xt, zt)) {
             System.out.printf("Line x=%f+%ft; y=%f+%ft; z=%f+%ft\n", x0, tx, y0, ty, z0, tz);
             System.out.printf("Point x=%f; z=%f\n", x, z);
+            System.out.printf("t x=%f; z=%f\n", xt, zt);
             throw new IllegalArgumentException("Node cannot be set on the line!");
         }
         return xt;
     }
 
     public Vertex getPointOnLine(Node node) {
-        float xt = getXtForNode(node);
+        double xt = getXtForNode(node);
         return getPoint(xt);
     }
 
@@ -161,13 +186,21 @@ public class Line {
         if (this == other) {
             return null;
         }
-        float xt = (other.x0 - this.x0) / (this.tx - other.tx);
-        float yt = (other.y0 - this.y0) / (this.ty - other.ty);
-        float zt = (other.z0 - this.z0) / (this.tz - other.tz);
-        if (xt != yt) {
+        double t1bottom = (other.tx * this.ty - this.tx * other.ty);
+        if (t1bottom == 0) {
+            // TODO: calculate t if t1bottom is null
+        } else {
+            double t1 = (other.ty * (this.x0 - other.x0) + other.tx * (other.y0 - this.y0)) / t1bottom;
+            return getPoint(t1);
+        }
+        // TODO: this is so wrong :|
+        double xt = (other.x0 - this.x0) / (this.tx - other.tx);
+        double yt = (other.y0 - this.y0) / (this.ty - other.ty);
+        double zt = (other.z0 - this.z0) / (this.tz - other.tz);
+        if (!Utils.isAlmostEqual(xt, yt)) {
             return null;
         }
-        if (yt != zt) {
+        if (!Utils.isAlmostEqual(xt, zt)) {
             return null;
         }
         return getPoint(xt);
@@ -177,7 +210,7 @@ public class Line {
         if (vertex == null) {
             return false;
         }
-        float t = getT(vertex);
+        double t = getT(vertex);
         if (t >= tStart && t <= tEnd) {
             return true;
         } else {
@@ -185,27 +218,27 @@ public class Line {
         }
     }
 
-    public float getX0() {
+    public double getX0() {
         return x0;
     }
 
-    public float getY0() {
+    public double getY0() {
         return y0;
     }
 
-    public float getZ0() {
+    public double getZ0() {
         return z0;
     }
 
-    public float getTx() {
+    public double getTx() {
         return tx;
     }
 
-    public float getTy() {
+    public double getTy() {
         return ty;
     }
 
-    public float getTz() {
+    public double getTz() {
         return tz;
     }
 }

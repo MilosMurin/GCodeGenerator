@@ -12,9 +12,9 @@ public class Edge {
     private Edge nextEdge;
     private Edge prevEdge;
 
-    private float a;
-    private float b;
-    private float c;
+    private double a;
+    private double b;
+    private double c;
 
     private Line line;
 
@@ -106,12 +106,12 @@ public class Edge {
         this.prevEdge = prevEdge;
     }
 
-    public float testVertex(Vertex v) {
+    public double testVertex(Vertex v) {
         return this.testPoint(v.getX(), v.getZ());
     }
 
-    public float testPoint(float x, float z) {
-        float v = a * x + b * z + c;
+    public double testPoint(double x, double z) {
+        double v = a * x + b * z + c;
 //        System.out.printf("Testing point(%f, %f) in plane (%f, %f, %f) %s %f\n", x, z, a, b, c, greater ? ">" : "<", v);
         return v;
     }
@@ -121,7 +121,7 @@ public class Edge {
         this.greaterSet = true;
     }
 
-    public boolean isInHalfPlane(float x, float z) {
+    public boolean isInHalfPlane(double x, double z) {
         // if i will not want to take the edges change this to be a sharp inequality
         if (greaterSet) {
             if (greater) {

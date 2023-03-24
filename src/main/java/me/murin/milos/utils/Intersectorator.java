@@ -87,6 +87,7 @@ public class Intersectorator {
                     // set next face based on the edge that it intersects with
                     Edge twin = intersect.getTwinEdge();
                     if (twin == null) {
+                        // TODO: the line can even return :( (this does not have to mean out of bounds, and shouldnt)
                         // this should mean that we stepped out of the bounds of the base model
                         break;
                     }

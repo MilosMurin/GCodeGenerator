@@ -57,22 +57,27 @@ public class Utils {
      *
      * @param node the node to get the lat and lon from
      * @param axis the axis to get
-     * @return a float containing coordinate on the given axis
+     * @return a double containing coordinate on the given axis
      */
-    public static float getCoordFromNode(Node node, Axis axis) {
+    public static double getCoordFromNode(Node node, Axis axis) {
         return switch (axis) {
-            case X -> (float) node.getLat();
+            case X -> node.getLat();
             case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
-            case Z -> (float) node.getLon();
+            case Z -> node.getLon();
         };
     }
 
-    public static void adjustCoordOnAxis(Node node, Axis axis, float min, float scale) {
+    public static void adjustCoordOnAxis(Node node, Axis axis, double min, double scale) {
         switch (axis) {
             // TODO: Change -1 based on the origin position
             case X -> node.setLat((node.getLat() - min) * scale - 1); // -1 is for origin position
             case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
             case Z -> node.setLon((node.getLon() - min) * scale - 1);
         }
+    }
+
+
+    public static boolean isAlmostEqual(double d1, double d2) {
+        return d1 - 0.00000001 < d2 && d1 + 0.00000001 > d2;
     }
 }

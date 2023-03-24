@@ -11,10 +11,10 @@ public class Face {
     private final int id;
     private Edge firstEdge;
 
-    private float a;
-    private float b;
-    private float c;
-    private float d;
+    private double a;
+    private double b;
+    private double c;
+    private double d;
 
 
     public Face(int id) {
@@ -45,17 +45,17 @@ public class Face {
         second.setGreater(second.testVertex(p1) > 0);
         third.setGreater(third.testVertex(p2) > 0);
 
-        float a1 = p2.getX() - p1.getX();
-        float a2 = p2.getY() - p1.getY();
-        float a3 = p2.getZ() - p1.getZ();
-        float b1 = p3.getX() - p1.getX();
-        float b2 = p3.getY() - p1.getY();
-        float b3 = p3.getZ() - p1.getZ();
+        double a1 = p2.getX() - p1.getX();
+        double a2 = p2.getY() - p1.getY();
+        double a3 = p2.getZ() - p1.getZ();
+        double b1 = p3.getX() - p1.getX();
+        double b2 = p3.getY() - p1.getY();
+        double b3 = p3.getZ() - p1.getZ();
 
         this.a = a2 * b3 - a3 * b2;
         this.b = a3 * b1 - a1 * b3;
         this.c = a1 * b2 - a2 * b1;
-        this.d = -(this.a * p1.getX() + this.b * p1.getY() + this.b * p1.getZ());
+        this.d = -(this.a * p1.getX() + this.b * p1.getY() + this.c * p1.getZ());
     }
 
     public boolean isPointInFace(Node node) {
@@ -64,15 +64,15 @@ public class Face {
 
     public Vertex instersect(Line line) {
         // the line should be crated from a point of a road
-        float top = -(a * line.getX0() + b * line.getY0() + c * line.getZ0() + d);
-        float bottom = a * line.getTx() + b * line.getTy() + c * line.getTz();
+        double top = -(a * line.getX0() + b * line.getY0() + c * line.getZ0() + d);
+        double bottom = a * line.getTx() + b * line.getTy() + c * line.getTz();
         if (bottom == 0) {
             return null; // intersection is the line or none
         }
         return line.getPoint(top / bottom);
     }
 
-    public boolean isPointInFace(float x, float z) {
+    public boolean isPointInFace(double x, double z) {
         boolean isIn = true;
         Edge current = firstEdge;
         while (isIn) {
@@ -85,8 +85,8 @@ public class Face {
         return isIn;
     }
 
-    public Line intersection(float oa, float ob, float oc, float od) {
-        float k = a / oa;
+    public Line intersection(double oa, double ob, double oc, double od) {
+        double k = a / oa;
         if (k * this.b == ob && k * this.c == oc) {
             // vectors are linearily dependant :D
             return null;

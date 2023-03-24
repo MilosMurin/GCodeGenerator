@@ -37,7 +37,7 @@ public class LineList extends ListWithModel {
         lines.add(startLine);
     }
 
-    public void changeSize(float width, float length) {
+    public void changeSize(double width, double length) {
         if (width <= 0 || length <= 0) {
             throw new IllegalArgumentException("Cannot change the size to a value less than or equal to zero!");
         }
@@ -46,7 +46,7 @@ public class LineList extends ListWithModel {
     }
 
 
-    public void changeY(float toAdd) {
+    public void changeY(double toAdd) {
         if (toAdd == 0) {
             return;
         }
@@ -70,9 +70,9 @@ public class LineList extends ListWithModel {
         float[] vertexBuffer = new float[vertices.size() * 3];
         for (Vertex v : vertexIds.keySet()) {
             int id = vertexIds.get(v);
-            vertexBuffer[3 * id] = v.getX(); // -1 is for origin position
-            vertexBuffer[3 * id + 1] = v.getY();
-            vertexBuffer[3 * id + 2] = v.getZ();
+            vertexBuffer[3 * id] = (float) v.getX(); // -1 is for origin position
+            vertexBuffer[3 * id + 1] = (float) v.getY();
+            vertexBuffer[3 * id + 2] = (float) v.getZ();
 
         }
 

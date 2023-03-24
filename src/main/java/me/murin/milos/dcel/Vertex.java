@@ -3,16 +3,16 @@ package me.murin.milos.dcel;
 public class Vertex {
 
     private final int id;
-    private final float x;
-    private final float y;
-    private final float z;
+    private final double x;
+    private final double y;
+    private final double z;
     private Edge incident;
 
-    public Vertex(float x, float y, float z) {
+    public Vertex(double x, double y, double z) {
         this(-1, x, y, z);
     }
 
-    public Vertex(int id, float x, float y, float z) {
+    public Vertex(int id, double x, double y, double z) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -26,7 +26,7 @@ public class Vertex {
     /**
      * @param index 0-x, 1-y, 2-z, other-x
      */
-    public float getCoord(int index) {
+    public double getCoord(int index) {
         return switch (index) {
             case 1 -> y;
             case 2 -> z;
@@ -34,15 +34,15 @@ public class Vertex {
         };
     }
 
-    public float getX() {
+    public double getX() {
         return x;
     }
 
-    public float getY() {
+    public double getY() {
         return y;
     }
 
-    public float getZ() {
+    public double getZ() {
         return z;
     }
 

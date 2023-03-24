@@ -15,10 +15,10 @@ public class Road {
     private final Node last;
     private Road next = null;
 
-    private Float a = null;
-    private Float b = null;
-    private Float c = null;
-    private Float d = null;
+    private Double a = null;
+    private Double b = null;
+    private Double c = null;
+    private Double d = null;
 
     public Road(Node first, Node last) {
         this.first = first;
@@ -28,21 +28,21 @@ public class Road {
     private void calculateGeometry() {
         float y = 1f;
         // create two vectors to be able to do a cross product to get the normal vector of a vertical plane
-        float lastX = getCoordFromNode(last, X);
-        float lastZ = getCoordFromNode(last, Z);
-        float firstX = getCoordFromNode(first, X);
-        float firstZ = getCoordFromNode(first, Z);
-        float a1 = lastX - firstX;
-        float a2 = 0;
-        float a3 = lastZ - firstZ;
-        float b1 = lastX - firstX;
-        float b2 = 0 - y;
-        float b3 = lastZ - firstZ;
+        double lastX = getCoordFromNode(last, X);
+        double lastZ = getCoordFromNode(last, Z);
+        double firstX = getCoordFromNode(first, X);
+        double firstZ = getCoordFromNode(first, Z);
+        double a1 = lastX - firstX;
+        double a2 = 0;
+        double a3 = lastZ - firstZ;
+        double b1 = lastX - firstX;
+        double b2 = 0 - y;
+        double b3 = lastZ - firstZ;
 
         this.a = a2 * b3 - a3 * b2;
         this.b = a3 * b1 - a1 * b3;
         this.c = a1 * b2 - a2 * b1;
-        this.d = -(this.a * firstX + this.b * y + this.b * firstZ);
+        this.d = -(this.a * firstX + this.b * y + this.c * firstZ);
     }
 
 
@@ -54,28 +54,28 @@ public class Road {
         return last;
     }
 
-    public float getA() {
+    public double getA() {
         if (a == null) {
             calculateGeometry();
         }
         return a;
     }
 
-    public float getB() {
+    public double getB() {
         if (b == null) {
             calculateGeometry();
         }
         return b;
     }
 
-    public float getC() {
+    public double getC() {
         if (c == null) {
             calculateGeometry();
         }
         return c;
     }
 
-    public float getD() {
+    public double getD() {
         if (d == null) {
             calculateGeometry();
         }
