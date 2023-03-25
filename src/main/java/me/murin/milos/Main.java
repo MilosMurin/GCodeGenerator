@@ -40,7 +40,7 @@ public class Main implements AppLogic {
 
     public static void main(String[] args) {
 
-        // TODO: Make intersections for all roads
+        // TODO: Remake intersection creation :( ffs (make it all in 2d then just put the points into 3d)
         Main main = new Main();
         Engine gameEng = new Engine("GCodeGenerator", new Window.WindowOptions(), main);
         gameEng.start();
@@ -55,7 +55,7 @@ public class Main implements AppLogic {
     public void init(Window window, Scene scene, Render render) {
         window.getInputManager().track(GLFW_KEY_Q);
 
-        mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL_PATH + TESTSMALL_PATH,
+        mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL_PATH + TEST_PATH,
                 scene.getTextureCache());
         addModelAndEntity(scene, mainModel, "mainEntity", true);
 

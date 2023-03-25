@@ -1,5 +1,10 @@
 package me.murin.milos.dcel;
 
+import jdk.jshell.execution.Util;
+import me.murin.milos.utils.Utils;
+
+import java.util.Objects;
+
 public class Vertex {
 
     private final int id;
@@ -54,11 +59,21 @@ public class Vertex {
         this.incident = incident;
     }
 
+    public boolean isPositionEqual(Vertex other) {
+        return Utils.isAlmostEqual(this.x, other.x) && Utils.isAlmostEqual(this.y, other.y) &&
+                Utils.isAlmostEqual(this.z, other.z);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Vertex vertex) {
-            return vertex.getId() == this.id && vertex.x == this.x &&  vertex.y == this.y &&  vertex.z == this.z;
+            return/* vertex.getId() == this.id &&*/ isPositionEqual(vertex);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, (float) x, (float) y, (float) z);
     }
 }

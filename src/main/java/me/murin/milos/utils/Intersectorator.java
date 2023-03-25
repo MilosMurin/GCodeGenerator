@@ -50,7 +50,8 @@ public class Intersectorator {
             Road road = start;
             Vertex end = null;
             Line prev = null;
-            while (road.hasNext()) { // will not work if the last road goes through more faces
+            boolean roadmoved = false;
+            while (road != null) { // will not work if the last road goes through more faces
                 var line = face.intersection(road);
                 if (end == null) { // if this is the first road set the starting point as the start of the road
                     result.addVertex(line.setStartPoint(road.getFirst()));
@@ -67,12 +68,18 @@ public class Intersectorator {
                     end = line.getPointOnLine(road.getLast());
                     // get next road
                     road = road.getNext();
+                    roadmoved = true;
                 } else {
                     Edge intersect = face.getFirstEdge();
                     // set end bound to the intersection with an edge of the face
                     // need to find out what side to go to
                     Vertex v = intersect.intersect(line);
-                    while (!line.isWithinBounds(v)) {
+                    while (true) {
+                        if (line.isWithinBounds(v)) {
+                            if (!line.getStartPoint().equals(v)) {
+                                break;
+                            }
+                        }
                         intersect = intersect.getNextEdge();
                         if (intersect == face.getFirstEdge()) {
                             break;
@@ -80,18 +87,21 @@ public class Intersectorator {
                         v = intersect.intersect(line);
                     }
                     if (v == null) {
-                        throw new IllegalStateException("The line has no intersections with the edge?????");
+                        // TODO: The problem is that the road only touches the face in one point hence it doesnt find
+                        //  any end points to go from (because i filter out the end point if it is equal to the start
+                        //  point which in this case it does) (also it calculates totaly wrong line equation idk why)
+                        throw new IllegalStateException("The line has no intersections with any of the edges?????");
                     }
                     line.setEndPoint(v);
                     end = v;
                     // set next face based on the edge that it intersects with
                     Edge twin = intersect.getTwinEdge();
                     if (twin == null) {
-                        // TODO: the line can even return :( (this does not have to mean out of bounds, and shouldnt)
                         // this should mean that we stepped out of the bounds of the base model
                         break;
                     }
                     face = twin.getIncidentFace();
+                    roadmoved = false;
                 }
                 result.addVertex(end);
                 if (prev != null) {

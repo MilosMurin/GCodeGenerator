@@ -32,11 +32,12 @@ public class Line {
     }
 
     public Line(double a1, double b1, double c1, double d1, double a2, double b2, double c2, double d2) {
-        // b2 should always be 0 because it is a vertical plane
         if (b1 == 0) {
+            // b1 cannot be 0 because we cannot 3d print on a object tha is vertical
             throw new IllegalArgumentException("First plane cannot be vertical!");
         }
         if (b2 != 0) {
+            // b2 should always be 0 because road should be a vertical plane
             throw new IllegalArgumentException("Second plane has to be vertical!");
         }
 
@@ -44,18 +45,18 @@ public class Line {
             if (c2 == 0) {
                 throw new IllegalArgumentException("WTF is even happening! How did the plane end up in a form d=0??");
             }
-            this.z0 = -(d2 / c2);
+            this.z0 = -(d2 / c2);// c2 is not zero because it would not be a plane
             this.tz = 0;
             if (a1 == 0) {
                 this.ty = 0;
-                this.y0 = -((c1 * d2) / (b1 * c2) + d1 / b1);
+                this.y0 = -((c1 * d2) / (b1 * c2) + d1 / b1);// c2 is not zero because it would not be a plane
                 this.tx = 0;
                 this.x0 = 0;
             } else {
                 this.ty = 1;
                 this.y0 = 0;
-                this.tx = -((c2 * b1) / (a1 * c2));
-                this.x0 = (c1 * d2 - c2 * d1) / (a1 * c2);
+                this.tx = -((c2 * b1) / (a1 * c2)); // a1 is not 0 bc: this is in the else statement
+                this.x0 = (c1 * d2 - c2 * d1) / (a1 * c2);// c2 is not zero because it would not be a plane
             }
         } else {
             // a2 and b1 != 0
@@ -112,7 +113,8 @@ public class Line {
         if ((t >= tStart && t <= tEnd) || (t <= tStart && t >= tEnd)) {
             return new Vertex(x0 + tx * t, y0 + ty * t, z0 + tz * t);
         } else {
-            throw new IllegalArgumentException("Parameter \"t\" is out of bounds of this line");
+            return null;
+//            throw new IllegalArgumentException("Parameter \"t\" is out of bounds of this line");
         }
     }
 
@@ -187,23 +189,24 @@ public class Line {
             return null;
         }
         double t1bottom = (other.tx * this.ty - this.tx * other.ty);
+        Double t1 = null;
         if (t1bottom == 0) {
-            // TODO: calculate t if t1bottom is null
+            if (this.ty == 0 && other.ty == 0) {
+                t1bottom = (other.tx * this.tz - this.tx * other.tz);
+                t1 = (other.tz * (this.x0 - other.x0) + other.tx * (other.z0 - this.z0)) / t1bottom;
+            } else if (this.tx == 0 && other.tx == 0) {
+                t1bottom = (other.tz * this.ty - this.tz * other.ty);
+                t1 = (other.tz * (this.z0 - other.z0) + other.tz * (other.z0 - this.z0)) / t1bottom;
+            }
+            // TODO: Maybe fix this if it throws any more errors
+//            System.out.println("T1 bottom is null");
         } else {
-            double t1 = (other.ty * (this.x0 - other.x0) + other.tx * (other.y0 - this.y0)) / t1bottom;
-            return getPoint(t1);
+            t1 = (other.ty * (this.x0 - other.x0) + other.tx * (other.y0 - this.y0)) / t1bottom;
         }
-        // TODO: this is so wrong :|
-        double xt = (other.x0 - this.x0) / (this.tx - other.tx);
-        double yt = (other.y0 - this.y0) / (this.ty - other.ty);
-        double zt = (other.z0 - this.z0) / (this.tz - other.tz);
-        if (!Utils.isAlmostEqual(xt, yt)) {
+        if (t1 == null) {
             return null;
         }
-        if (!Utils.isAlmostEqual(xt, zt)) {
-            return null;
-        }
-        return getPoint(xt);
+        return getPoint(t1);
     }
 
     public boolean isWithinBounds(Vertex vertex) {

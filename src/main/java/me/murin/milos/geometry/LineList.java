@@ -30,7 +30,9 @@ public class LineList extends ListWithModel {
 
     public void addVertex(Vertex vertex) {
         vertices.add(vertex);
-        vertexIds.put(vertex, vertexId++);
+        if (!vertexIds.containsKey(vertex)) {
+            vertexIds.put(vertex, vertexId++);
+        }
     }
 
     public void addLine(Line startLine) {
@@ -70,8 +72,8 @@ public class LineList extends ListWithModel {
         float[] vertexBuffer = new float[vertices.size() * 3];
         for (Vertex v : vertexIds.keySet()) {
             int id = vertexIds.get(v);
-            vertexBuffer[3 * id] = (float) v.getX(); // -1 is for origin position
-            vertexBuffer[3 * id + 1] = (float) v.getY();
+            vertexBuffer[3 * id] = (float) v.getX();
+            vertexBuffer[3 * id + 1] = (float) v.getY() + 0.2f;
             vertexBuffer[3 * id + 2] = (float) v.getZ();
 
         }
@@ -86,8 +88,8 @@ public class LineList extends ListWithModel {
 
             while (current.hasNext()) {
                 current = current.getNext();
-                indices.add(vertexIds.get(l.getStartPoint()));
-                indices.add(vertexIds.get(l.getEndPoint()));
+                indices.add(vertexIds.get(current.getStartPoint()));
+                indices.add(vertexIds.get(current.getEndPoint()));
             }
         }
 
