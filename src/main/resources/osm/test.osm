@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <osm version="0.6" generator="CGImap 0.8.8 (2357184 spike-08.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
- <bounds minlat="0" minlon="0" maxlat="2" maxlon="1"/>
+ <bounds minlat="0" minlon="0" maxlat="2" maxlon="2"/>
  <node id="320892626" visible="true" version="10" changeset="106419428" timestamp="2021-06-15T18:55:46Z" user="t_ja"
- uid="103618" lat="0" lon="0.5"/>
- <node id="332486250" visible="true" version="2" changeset="737339" timestamp="2009-03-04T21:35:20Z" user="Andreh" uid="100525" lat="1" lon="1"/>
- <node id="332486251" visible="true" version="2" changeset="737339" timestamp="2009-03-04T21:35:20Z" user="Andreh" uid="100525" lat="0.5" lon="0.5"/>
+ uid="103618" lat="0" lon="2"/>
+ <node id="332486250" visible="true" version="2" changeset="737339" timestamp="2009-03-04T21:35:20Z" user="Andreh"
+ uid="100525" lat="1" lon="0"/>
+ <node id="332486251" visible="true" version="2" changeset="737339" timestamp="2009-03-04T21:35:20Z" user="Andreh"
+ uid="100525" lat="2" lon="2"/>
  <way id="95535566" visible="true" version="6" changeset="108204494" timestamp="2021-07-18T18:51:38Z" user="t_ja" uid="103618">
   <nd ref="320892626"/>
   <nd ref="332486250"/>

@@ -25,12 +25,17 @@ public class Main implements AppLogic {
     private static final String TEST_PATH = "test/test.obj";
     private static final String TESTFULL_PATH = "test/testFull.obj";
     private static final String TESTSMALL_PATH = "test/testSmall.obj";
+    private static final String TESTMINI_PATH = "test/testMini.obj";
 
     private static final String MAP_OSM = "osm/map.osm";
     private static final String TEST_OSM = "osm/test.osm";
 
     private static final float MOUSE_SENSITIVITY = 0.3f;
     private static final float MOVEMENT_SPEED = 0.01f;
+
+
+    private static final String MODEL = MODEL_PATH + TESTMINI_PATH;
+    private static final String ROADS = RES_PATH + MAP_OSM;
 
     private boolean dcelVisible = false;
     private Model mainModel;
@@ -40,7 +45,6 @@ public class Main implements AppLogic {
 
     public static void main(String[] args) {
 
-        // TODO: Remake intersection creation :( ffs (make it all in 2d then just put the points into 3d)
         Main main = new Main();
         Engine gameEng = new Engine("GCodeGenerator", new Window.WindowOptions(), main);
         gameEng.start();
@@ -55,14 +59,13 @@ public class Main implements AppLogic {
     public void init(Window window, Scene scene, Render render) {
         window.getInputManager().track(GLFW_KEY_Q);
 
-        mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL_PATH + TEST_PATH,
-                scene.getTextureCache());
+        mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL, scene.getTextureCache());
         addModelAndEntity(scene, mainModel, "mainEntity", true);
 
         dcelModel = mainModel.getDcelModel();
         addModelAndEntity(scene, dcelModel, "dcelEntity", dcelVisible);
 
-        RoadLoader rl = new RoadLoader(RES_PATH + TEST_OSM);
+        RoadLoader rl = new RoadLoader(ROADS);
         RoadList roadList = rl.getRoadList();
         roadModel = roadList.getModel();
         Entity en = addModelAndEntity(scene, roadModel, "roadEntity", true);

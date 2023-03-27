@@ -50,7 +50,7 @@ public class Intersectorator {
             Road road = start;
             Vertex end = null;
             Line prev = null;
-            boolean roadmoved = false;
+            Edge intersected = null; // the line that was crossed to get to this face
             while (road != null) { // will not work if the last road goes through more faces
                 var line = face.intersection(road);
                 if (end == null) { // if this is the first road set the starting point as the start of the road
@@ -68,7 +68,7 @@ public class Intersectorator {
                     end = line.getPointOnLine(road.getLast());
                     // get next road
                     road = road.getNext();
-                    roadmoved = true;
+                    intersected = null;
                 } else {
                     Edge intersect = face.getFirstEdge();
                     // set end bound to the intersection with an edge of the face
@@ -76,8 +76,16 @@ public class Intersectorator {
                     Vertex v = intersect.intersect(line);
                     while (true) {
                         if (line.isWithinBounds(v)) {
-                            if (!line.getStartPoint().equals(v)) {
-                                break;
+                            if (intersected == null) {
+                                if (intersect.getTwinEdge() != null) {
+                                    // an edge with no twin edge is ont the edge of the model
+                                    break;
+                                }
+                                // TODO: save the result and if nothing else was found then use this one
+                            } else  {
+                                if (!intersect.equals(intersected.getTwinEdge())) {
+                                    break;
+                                }
                             }
                         }
                         intersect = intersect.getNextEdge();
@@ -86,10 +94,8 @@ public class Intersectorator {
                         }
                         v = intersect.intersect(line);
                     }
+                    intersected = intersect;
                     if (v == null) {
-                        // TODO: The problem is that the road only touches the face in one point hence it doesnt find
-                        //  any end points to go from (because i filter out the end point if it is equal to the start
-                        //  point which in this case it does) (also it calculates totaly wrong line equation idk why)
                         throw new IllegalStateException("The line has no intersections with any of the edges?????");
                     }
                     line.setEndPoint(v);
@@ -101,7 +107,6 @@ public class Intersectorator {
                         break;
                     }
                     face = twin.getIncidentFace();
-                    roadmoved = false;
                 }
                 result.addVertex(end);
                 if (prev != null) {

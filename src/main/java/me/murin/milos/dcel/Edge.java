@@ -4,6 +4,8 @@ import me.murin.milos.geometry.Line;
 
 public class Edge {
 
+    public static int twins = 0;
+
     private int id;
     private int edgeId; // 1 or 2
     private final Vertex origin;
@@ -39,14 +41,20 @@ public class Edge {
 
         this.twinEdge = twinEdge;
         twinEdge.setTwinEdge(this);
+        twins++;
     }
 
     public boolean isTwin(Vertex origin, Vertex end) {
-        if (end == this.origin) {
+        if (end.equals(this.origin)) {
             if (this.nextEdge != null) {
-                return this.nextEdge.getOrigin() == origin;
+                return this.nextEdge.getOrigin().equals(origin);
             }
         }
+//        if (origin == this.origin) {
+//            if (this.nextEdge != null) {
+//                return this.nextEdge.getOrigin() == end;
+//            }
+//        }
         return false;
     }
 
@@ -135,5 +143,13 @@ public class Edge {
 
     public Vertex intersect(Line line) {
         return this.line.intersect(line);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Edge other) {
+            return this.origin.equals(other.origin) && this.nextEdge.origin.equals(other.nextEdge.origin);
+        }
+        return false;
     }
 }

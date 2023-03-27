@@ -191,19 +191,25 @@ public class Line {
         double t1bottom = (other.tx * this.ty - this.tx * other.ty);
         Double t1 = null;
         if (t1bottom == 0) {
+            // TODO: does not have to be zero when t1bottom == 0
             if (this.ty == 0 && other.ty == 0) {
                 t1bottom = (other.tx * this.tz - this.tx * other.tz);
                 t1 = (other.tz * (this.x0 - other.x0) + other.tx * (other.z0 - this.z0)) / t1bottom;
             } else if (this.tx == 0 && other.tx == 0) {
                 t1bottom = (other.tz * this.ty - this.tz * other.ty);
                 t1 = (other.tz * (this.z0 - other.z0) + other.tz * (other.z0 - this.z0)) / t1bottom;
+            } else if (this.ty == 0 && this.tx == 0) {
+                t1bottom = this.tz * other.tx;
+                t1 = (other.z0 + other.tz * (this.x0 - other.x0) - this.z0 * other.tx) / t1bottom;
+            } else if (other.ty == 0 && other.tx == 0) {
+                t1bottom = other.tz * this.tx;
+                t1 = (this.z0 + this.tz * (other.x0 - this.x0) - other.z0 * this.tx) / t1bottom;
             }
-            // TODO: Maybe fix this if it throws any more errors
 //            System.out.println("T1 bottom is null");
         } else {
             t1 = (other.ty * (this.x0 - other.x0) + other.tx * (other.y0 - this.y0)) / t1bottom;
         }
-        if (t1 == null) {
+        if (t1 == null || t1.isNaN()) {
             return null;
         }
         return getPoint(t1);
