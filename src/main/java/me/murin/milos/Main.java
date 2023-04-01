@@ -35,7 +35,7 @@ public class Main implements AppLogic {
 
 
     private static final String MODEL = MODEL_PATH + TESTMINI_PATH;
-    private static final String ROADS = RES_PATH + MAP_OSM;
+    private static final String ROADS = RES_PATH + TEST_OSM;
 
     private boolean dcelVisible = false;
     private Model mainModel;

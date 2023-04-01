@@ -3,6 +3,7 @@ package me.murin.milos.utils;
 import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Node;
 import info.pavie.basicosmparser.model.Way;
+import me.murin.milos.dcel.Vertex;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -73,6 +74,15 @@ public class Utils {
             case X -> node.setLat((node.getLat() - min) * scale - 1); // -1 is for origin position
             case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
             case Z -> node.setLon((node.getLon() - min) * scale - 1);
+        }
+    }
+
+    public static void adjustCoordOnAxis(Vertex vertex, Axis axis, double min, double scale) {
+        switch (axis) {
+            // TODO: Change -1 based on the origin position
+            case X -> vertex.setX((vertex.getX() - min) * scale - 1); // -1 is for origin position
+            case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
+            case Z -> vertex.setZ((vertex.getZ() - min) * scale - 1);
         }
     }
 

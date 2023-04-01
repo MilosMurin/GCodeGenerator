@@ -40,42 +40,44 @@ public class Intersectorator {
             // note: make also a list of nodes (that remember the lines going out of them and into them) for the
             // traveling salesman problem
 
-            Face face = dcel.getFaceForPoint(Utils.getCoordFromNode(start.getFirst(), Axis.X),
-                    Utils.getCoordFromNode(start.getFirst(), Axis.Z));
+            Face face = dcel.getFaceForPoint(start.getFirst().getX(), start.getFirst().getZ());
             if (face == null) {
-                System.out.printf("Point (%f, %f) didnt find a face", Utils.getCoordFromNode(start.getFirst(),
-                        Axis.X), Utils.getCoordFromNode(start.getFirst(), Axis.Z));
+                System.out.printf("Point (%f, %f) didnt find a face", start.getFirst().getX(), start.getFirst().getZ());
                 continue;
             }
             Road road = start;
             Vertex end = null;
             Line prev = null;
             Edge intersected = null; // the line that was crossed to get to this face
+            Edge intersect;
+            Line lineIntersection;
             while (road != null) { // will not work if the last road goes through more faces
-                var line = face.intersection(road);
+                lineIntersection = face.intersection(road);
                 if (end == null) { // if this is the first road set the starting point as the start of the road
-                    result.addVertex(line.setStartPoint(road.getFirst()));
+                    lineIntersection.setStartPoint(lineIntersection.getPointOnLine(road.getFirst()));
+                    result.addVertex(lineIntersection.getStartPoint());
                 } else { // othervise set it as the ending point of the previous road
-                    line.setStartPoint(end);
+                    lineIntersection.setStartPoint(end);
                 }
                 // test if the road ending is within the face
                 boolean endInFace = face.isPointInFace(road.getLast());
                 // if endInFace is false set the end point of the line to the intersection
                 // set end bound to end of road
-                line.setEndPoint(road.getLast()); // if not end in face this will get rewritten
+                lineIntersection.setEndPoint(lineIntersection.getPointOnLine(road.getLast())); // if not end in face this will
+                // get rewritten
                 if (endInFace) {
                     // set the ending point
-                    end = line.getPointOnLine(road.getLast());
+                    end = lineIntersection.getPointOnLine(road.getLast());
                     // get next road
                     road = road.getNext();
                     intersected = null;
                 } else {
-                    Edge intersect = face.getFirstEdge();
+                    intersect = face.getFirstEdge();
                     // set end bound to the intersection with an edge of the face
                     // need to find out what side to go to
-                    Vertex v = intersect.intersect(line);
+                    Vertex v = intersect.intersect(lineIntersection);
                     while (true) {
-                        if (line.isWithinBounds(v)) {
+                        if (lineIntersection.isWithinBounds(v)) {
                             if (intersected == null) {
                                 if (intersect.getTwinEdge() != null) {
                                     // an edge with no twin edge is ont the edge of the model
@@ -92,13 +94,26 @@ public class Intersectorator {
                         if (intersect == face.getFirstEdge()) {
                             break;
                         }
-                        v = intersect.intersect(line);
+                        v = intersect.intersect(lineIntersection);
                     }
                     intersected = intersect;
                     if (v == null) {
+                        System.out.println("Line:");
+                        System.out.println(lineIntersection);
+                        System.out.println("Edges:");
+                        Edge e = face.getFirstEdge();
+                        System.out.println(e.getLine());
+                        e = e.getNextEdge();
+                        System.out.println(e.getLine());
+                        e = e.getNextEdge();
+                        System.out.println(e.getLine());
+                        System.out.println("Face:");
+                        System.out.println(face);
+                        System.out.println("Road:");
+                        System.out.println(road);
                         throw new IllegalStateException("The line has no intersections with any of the edges?????");
                     }
-                    line.setEndPoint(v);
+                    lineIntersection.setEndPoint(v);
                     end = v;
                     // set next face based on the edge that it intersects with
                     Edge twin = intersect.getTwinEdge();
@@ -110,11 +125,11 @@ public class Intersectorator {
                 }
                 result.addVertex(end);
                 if (prev != null) {
-                    prev.setNext(line);
+                    prev.setNext(lineIntersection);
                 } else {
-                    result.addLine(line);
+                    result.addLine(lineIntersection);
                 }
-                prev = line;
+                prev = lineIntersection;
             }
         }
     }

@@ -1,6 +1,6 @@
 package me.murin.milos.roads;
 
-import info.pavie.basicosmparser.model.Node;
+import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.Road;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.utils.Axis;
@@ -9,27 +9,25 @@ import me.murin.milos.utils.Utils;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_LINES;
 
 public class RoadList extends ListWithModel {
 
-    private final HashMap<String, Node> nodes = new HashMap<>();
     private final ArrayList<Road> starts = new ArrayList<>();
-    private final HashMap<String, Integer> nodeIds = new HashMap<>();
     private int nextNodeId = 0;
 
-    public void addNode(Node n) {
-        nodes.putIfAbsent(n.getId(), n);
-        testExtremes(Axis.X, Utils.getCoordFromNode(n, Axis.X));
-        testExtremes(Axis.Z, Utils.getCoordFromNode(n, Axis.Z));
+    private final HashSet<Vertex> vertices = new HashSet<>();
 
-        if (!nodeIds.containsKey(n.getId())) {
-            nodeIds.put(n.getId(), nextNodeId++);
+    public void addVertex(Vertex vertex) {
+        if (vertices.add(vertex)) {
+            vertex.setId(nextNodeId++);
+            testExtremes(Axis.X, vertex.getX());
+            testExtremes(Axis.Z, vertex.getZ());
+            invalidateModel();
         }
-        invalidateModel();
     }
 
     public void addStartRoad(Road start) {
@@ -41,10 +39,9 @@ public class RoadList extends ListWithModel {
         // TODO: Chnage the 2 to the size of the base model
         double scaleX = 2 / (getMax(Axis.X) - getMin(Axis.X));
         double scaleZ = 2 / (getMax(Axis.Z) - getMin(Axis.Z));
-        for (String key : nodes.keySet()) {
-            Node node = nodes.get(key);
-            Utils.adjustCoordOnAxis(node, Axis.X, getMin(Axis.X), scaleX);
-            Utils.adjustCoordOnAxis(node, Axis.Z, getMin(Axis.Z), scaleZ);
+        for (Vertex v : vertices) {
+            Utils.adjustCoordOnAxis(v, Axis.X, getMin(Axis.X), scaleX);
+            Utils.adjustCoordOnAxis(v, Axis.Z, getMin(Axis.Z), scaleZ);
         }
     }
 
@@ -52,26 +49,25 @@ public class RoadList extends ListWithModel {
     @Override
     protected Mesh getMesh() {
         // vertices
-        float[] vertexBuffer = new float[nodes.size() * 3];
-        for (String s : nodeIds.keySet()) {
-            int id = nodeIds.get(s);
-            Node node = nodes.get(s);
-            vertexBuffer[3 * id] = (float) Utils.getCoordFromNode(node, Axis.X);
-            vertexBuffer[3 * id + 1] = 1f;
-            vertexBuffer[3 * id + 2] = (float) Utils.getCoordFromNode(node, Axis.Z);
+        float[] vertexBuffer = new float[vertices.size() * 3];
+        for (Vertex v : vertices) {
+            int id = v.getId();
+            vertexBuffer[3 * id] = (float) v.getX();
+            vertexBuffer[3 * id + 1] = (float) v.getY();
+            vertexBuffer[3 * id + 2] = (float) v.getZ();
         }
 
         // indices
         List<Integer> indices = new ArrayList<>();
         for (Road r : starts) {
             Road current = r;
-            indices.add(nodeIds.get(r.getFirst().getId()));
-            indices.add(nodeIds.get(r.getLast().getId()));
+            indices.add(current.getFirst().getId());
+            indices.add(current.getLast().getId());
 
             while (current.hasNext()) {
                 current = current.getNext();
-                indices.add(nodeIds.get(current.getFirst().getId()));
-                indices.add(nodeIds.get(current.getLast().getId()));
+                indices.add(current.getFirst().getId());
+                indices.add(current.getLast().getId());
             }
         }
 

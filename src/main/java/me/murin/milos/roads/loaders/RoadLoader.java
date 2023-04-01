@@ -4,6 +4,7 @@ import info.pavie.basicosmparser.controller.OSMParser;
 import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Node;
 import info.pavie.basicosmparser.model.Way;
+import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.Road;
 import org.xml.sax.SAXException;
 
@@ -26,12 +27,13 @@ public class RoadLoader extends RoadImporter {
                 Way way = isWay(result.get(key));
                 if (way != null) {
                     if (isRoad(way)) {
-                        Node prev = null;
+                        Vertex prev = null, current;
                         Road prevRoad = null;
                         for (Node n : way.getNodes()) {
-                            roadList.addNode(n);
+                            current = new Vertex(n);
+                            roadList.addVertex(current);
                             if (prev != null) {
-                                Road r = new Road(prev, n);
+                                Road r = new Road(prev, current);
                                 if (prevRoad != null) {
                                     prevRoad.setNext(r);
                                 } else {
@@ -39,7 +41,7 @@ public class RoadLoader extends RoadImporter {
                                 }
                                 prevRoad = r;
                             }
-                            prev = n;
+                            prev = current;
                         }
                     }
                 }

@@ -73,7 +73,7 @@ public class LineList extends ListWithModel {
         for (Vertex v : vertexIds.keySet()) {
             int id = vertexIds.get(v);
             vertexBuffer[3 * id] = (float) v.getX();
-            vertexBuffer[3 * id + 1] = (float) v.getY() + 0.2f;
+            vertexBuffer[3 * id + 1] = (float) v.getY() + 0.02f;
             vertexBuffer[3 * id + 2] = (float) v.getZ();
 
         }

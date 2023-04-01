@@ -1,8 +1,7 @@
 package me.murin.milos.geometry;
 
-import info.pavie.basicosmparser.model.Node;
 import me.murin.milos.dcel.Vertex;
-import me.murin.milos.utils.Axis;
+import me.murin.milos.utils.MyMatrix;
 import me.murin.milos.utils.Utils;
 
 /**
@@ -10,73 +9,45 @@ import me.murin.milos.utils.Utils;
  */
 public class Line {
 
-    private final double x0;
-    private final double y0;
-    private final double z0;
-    private final double tx;
-    private final double ty;
-    private final double tz;
+    private final double x;
+    private final double y;
+    private final double z;
+    private final double a;
+    private final double b;
+    private final double c;
 
     private double tStart = Double.MAX_VALUE;
     private double tEnd = Double.MIN_VALUE;
 
     private Line next;
 
+
     public Line(double pointX, double pointY, double pointZ, double vectorX, double vectorY, double vectorZ) {
-        this.x0 = pointX;
-        this.y0 = pointY;
-        this.z0 = pointZ;
-        this.tx = vectorX;
-        this.ty = vectorY;
-        this.tz = vectorZ;
+        this.x = pointX;
+        this.y = pointY;
+        this.z = pointZ;
+        this.a = vectorX;
+        this.b = vectorY;
+        this.c = vectorZ;
+        if (this.a == 0 && this.b == 0 && this.c == 0) {
+            throw new IllegalArgumentException("You've created a point and not a line!");
+        }
     }
 
-    public Line(double a1, double b1, double c1, double d1, double a2, double b2, double c2, double d2) {
-        if (b1 == 0) {
-            // b1 cannot be 0 because we cannot 3d print on a object tha is vertical
-            throw new IllegalArgumentException("First plane cannot be vertical!");
-        }
-        if (b2 != 0) {
-            // b2 should always be 0 because road should be a vertical plane
-            throw new IllegalArgumentException("Second plane has to be vertical!");
-        }
-
-        if (a2 == 0) {
-            if (c2 == 0) {
-                throw new IllegalArgumentException("WTF is even happening! How did the plane end up in a form d=0??");
-            }
-            this.z0 = -(d2 / c2);// c2 is not zero because it would not be a plane
-            this.tz = 0;
-            if (a1 == 0) {
-                this.ty = 0;
-                this.y0 = -((c1 * d2) / (b1 * c2) + d1 / b1);// c2 is not zero because it would not be a plane
-                this.tx = 0;
-                this.x0 = 0;
-            } else {
-                this.ty = 1;
-                this.y0 = 0;
-                this.tx = -((c2 * b1) / (a1 * c2)); // a1 is not 0 bc: this is in the else statement
-                this.x0 = (c1 * d2 - c2 * d1) / (a1 * c2);// c2 is not zero because it would not be a plane
-            }
-        } else {
-            // a2 and b1 != 0
-            this.x0 = -(d2 / a2);
-            this.tx = -(c2 / a2);
-            this.ty = (a1 * c2 - a2 * c1) / (a2 * b1);
-            this.y0 = (a1 * d2 - a2 * d1) / (a2 * b1);
-            this.z0 = 0;
-            this.tz = 1;
-        }
+    public Line(Vertex p, Vertex p2) {
+        this(p.getX(), p.getY(), p.getZ(), p2.getX() - p.getX(), p2.getY() - p.getY(), p2.getZ() - p.getZ());
+        this.setStartPoint(p);
+        this.setEndPoint(p2);
     }
 
     public double getT(Vertex vertex) {
 
-        double t = tx != 0 ? getTForX(vertex.getX()) : ty != 0 ? getTForY(vertex.getY()) : tz != 0 ?
+        double t = a != 0 ? getTForX(vertex.getX()) : b != 0 ? getTForY(vertex.getY()) : c != 0 ?
                 getTForZ(vertex.getZ()) : 0;
         if (isVertexInLine(vertex, t)) {
             return t;
         } else {
-            System.out.printf("Line:\nx=%f+%ft\ny=%f+%ft\nz=%f+%ft\n", x0, tx, y0, ty, z0, tz);
+            System.out.printf("Line:\nx=%f+%ft\ny=%f+%ft\nz=%f+%ft\n", x, a, y, b, z, c);
             System.out.printf("Point: (%f, %f, %f)\n", vertex.getX(), vertex.getY(), vertex.getZ());
             System.out.printf("t: %f\n", t);
             throw new IllegalArgumentException("Cannot set bounds with vertices that dont belong to the line!");
@@ -84,8 +55,8 @@ public class Line {
     }
 
     public boolean isVertexInLine(Vertex v, double t) {
-        return Utils.isAlmostEqual(v.getX(), x0 + tx * t) && Utils.isAlmostEqual(v.getY(), y0 + ty * t) &&
-                Utils.isAlmostEqual(v.getZ(), z0 + tz * t);
+        return Utils.isAlmostEqual(v.getX(), x + a * t) && Utils.isAlmostEqual(v.getY(), y + b * t) &&
+                Utils.isAlmostEqual(v.getZ(), z + c * t);
     }
 
     public boolean isVertexInLine(Vertex v) {
@@ -98,20 +69,20 @@ public class Line {
     }
 
     private double getTForX(double x) {
-        return (x - x0) / tx;
+        return (x - this.x) / a;
     }
 
     private double getTForY(double y) {
-        return (y - y0) / ty;
+        return (y - this.y) / b;
     }
 
     private double getTForZ(double z) {
-        return (z - z0) / tz;
+        return (z - this.z) / c;
     }
 
     public Vertex getPoint(double t) {
         if ((t >= tStart && t <= tEnd) || (t <= tStart && t >= tEnd)) {
-            return new Vertex(x0 + tx * t, y0 + ty * t, z0 + tz * t);
+            return new Vertex(x + a * t, y + b * t, z + c * t);
         } else {
             return null;
 //            throw new IllegalArgumentException("Parameter \"t\" is out of bounds of this line");
@@ -126,32 +97,13 @@ public class Line {
         tStart = getT(start);
     }
 
-    public Vertex setStartPoint(Node start) {
-        return setPoint(start, true);
-    }
-
-    public void setEndPoint(Node end) {
-        setPoint(end, false);
-    }
-
-    private Vertex setPoint(Node point, boolean start) {
-        double xt = getXtForNode(point);
-        // calculate y
-        if (start) {
-            tStart = xt;
-        } else {
-            tEnd = xt;
-        }
-        return getPoint(xt);
-    }
-
-    public double getXtForNode(Node node) {
-        double x = Utils.getCoordFromNode(node, Axis.X);
-        double z = Utils.getCoordFromNode(node, Axis.Z);
+    public double getXtForFlat(Vertex vertex) {
+        double x = vertex.getX();
+        double z = vertex.getZ();
         double xt = getTForX(x);
         double zt = getTForZ(z);
         if (!Utils.isAlmostEqual(xt, zt)) {
-            System.out.printf("Line x=%f+%ft; y=%f+%ft; z=%f+%ft\n", x0, tx, y0, ty, z0, tz);
+            System.out.printf("Line x=%f+%ft; y=%f+%ft; z=%f+%ft\n", this.x, a, y, b, this.z, c);
             System.out.printf("Point x=%f; z=%f\n", x, z);
             System.out.printf("t x=%f; z=%f\n", xt, zt);
             throw new IllegalArgumentException("Node cannot be set on the line!");
@@ -159,8 +111,8 @@ public class Line {
         return xt;
     }
 
-    public Vertex getPointOnLine(Node node) {
-        double xt = getXtForNode(node);
+    public Vertex getPointOnLine(Vertex vertex) {
+        double xt = getXtForFlat(vertex);
         return getPoint(xt);
     }
 
@@ -188,31 +140,19 @@ public class Line {
         if (this == other) {
             return null;
         }
-        double t1bottom = (other.tx * this.ty - this.tx * other.ty);
-        Double t1 = null;
-        if (t1bottom == 0) {
-            // TODO: does not have to be zero when t1bottom == 0
-            if (this.ty == 0 && other.ty == 0) {
-                t1bottom = (other.tx * this.tz - this.tx * other.tz);
-                t1 = (other.tz * (this.x0 - other.x0) + other.tx * (other.z0 - this.z0)) / t1bottom;
-            } else if (this.tx == 0 && other.tx == 0) {
-                t1bottom = (other.tz * this.ty - this.tz * other.ty);
-                t1 = (other.tz * (this.z0 - other.z0) + other.tz * (other.z0 - this.z0)) / t1bottom;
-            } else if (this.ty == 0 && this.tx == 0) {
-                t1bottom = this.tz * other.tx;
-                t1 = (other.z0 + other.tz * (this.x0 - other.x0) - this.z0 * other.tx) / t1bottom;
-            } else if (other.ty == 0 && other.tx == 0) {
-                t1bottom = other.tz * this.tx;
-                t1 = (this.z0 + this.tz * (other.x0 - this.x0) - other.z0 * this.tx) / t1bottom;
+        MyMatrix matrix = new MyMatrix(this, other);
+        matrix.solve();
+        if (matrix.hasSolution()) {
+            Vertex vt = getPoint(matrix.getT());
+            Vertex vs = other.getPoint(matrix.getS());
+            if (vt == null || vs == null) {
+                return null;
             }
-//            System.out.println("T1 bottom is null");
-        } else {
-            t1 = (other.ty * (this.x0 - other.x0) + other.tx * (other.y0 - this.y0)) / t1bottom;
+            if (vt.equals(vs)) {
+                return vt;
+            }
         }
-        if (t1 == null || t1.isNaN()) {
-            return null;
-        }
-        return getPoint(t1);
+        return null;
     }
 
     public boolean isWithinBounds(Vertex vertex) {
@@ -227,27 +167,32 @@ public class Line {
         }
     }
 
-    public double getX0() {
-        return x0;
+    public double getX() {
+        return x;
     }
 
-    public double getY0() {
-        return y0;
+    public double getY() {
+        return y;
     }
 
-    public double getZ0() {
-        return z0;
+    public double getZ() {
+        return z;
     }
 
-    public double getTx() {
-        return tx;
+    public double getA() {
+        return a;
     }
 
-    public double getTy() {
-        return ty;
+    public double getB() {
+        return b;
     }
 
-    public double getTz() {
-        return tz;
+    public double getC() {
+        return c;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("x=%.4f + %.4f*t\ny=%.4f + %.4f*t\nz=%.4f + %.4f*t\n", x, a, y, b, z, c);
     }
 }

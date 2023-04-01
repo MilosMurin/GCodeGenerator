@@ -1,10 +1,7 @@
 package me.murin.milos.dcel;
 
-import info.pavie.basicosmparser.model.Node;
 import me.murin.milos.geometry.Line;
 import me.murin.milos.geometry.Road;
-import me.murin.milos.utils.Axis;
-import me.murin.milos.utils.Utils;
 
 public class Face {
 
@@ -58,18 +55,8 @@ public class Face {
         this.d = -(this.a * p1.getX() + this.b * p1.getY() + this.c * p1.getZ());
     }
 
-    public boolean isPointInFace(Node node) {
-        return isPointInFace(Utils.getCoordFromNode(node, Axis.X), Utils.getCoordFromNode(node, Axis.Z));
-    }
-
-    public Vertex instersect(Line line) {
-        // the line should be crated from a point of a road
-        double top = -(a * line.getX0() + b * line.getY0() + c * line.getZ0() + d);
-        double bottom = a * line.getTx() + b * line.getTy() + c * line.getTz();
-        if (bottom == 0) {
-            return null; // intersection is the line or none
-        }
-        return line.getPoint(top / bottom);
+    public boolean isPointInFace(Vertex vertex) {
+        return isPointInFace(vertex.getX(), vertex.getZ());
     }
 
     public boolean isPointInFace(double x, double z) {
@@ -85,20 +72,21 @@ public class Face {
         return isIn;
     }
 
-    public Line intersection(double oa, double ob, double oc, double od) {
-        double k = a / oa;
-        if (k * this.b == ob && k * this.c == oc) {
-            // vectors are linearily dependant :D
-            return null;
-        }
-        return new Line(this.a, this.b, this.c, this.d, oa, ob, oc, od);
-    }
-
-    public Line intersection(Face other) {
-        return intersection(other.a, other.b, other.c, other.d);
-    }
-
     public Line intersection(Road other) {
-        return intersection(other.getA(), other.getB(), other.getC(), other.getD());
+        return new Line(intersect(other.getFirst()), intersect(other.getLast()));
+    }
+
+    public Vertex intersect(Vertex vertex) {
+        if (b == 0) {
+            return null;
+        } else {
+            double num = (a * vertex.getX() + b + c * vertex.getZ() + d) / b;
+            return new Vertex(vertex.getX(), 1 - num, vertex.getZ());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%.4f*x + %.4f*y + %.4f*z + %.4f = 0\n", a, b, c, d);
     }
 }

@@ -1,17 +1,22 @@
 package me.murin.milos.dcel;
 
-import jdk.jshell.execution.Util;
+import info.pavie.basicosmparser.model.Node;
+import me.murin.milos.utils.Axis;
 import me.murin.milos.utils.Utils;
 
 import java.util.Objects;
 
 public class Vertex {
 
-    private final int id;
-    private final double x;
-    private final double y;
-    private final double z;
+    private int id;
+    private double x;
+    private double y;
+    private double z;
     private Edge incident;
+
+    public Vertex(Node node) {
+        this(-1, Utils.getCoordFromNode(node, Axis.X), 1, Utils.getCoordFromNode(node, Axis.Z));
+    }
 
     public Vertex(double x, double y, double z) {
         this(-1, x, y, z);
@@ -26,6 +31,10 @@ public class Vertex {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -51,6 +60,18 @@ public class Vertex {
         return z;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setZ(double z) {
+        this.z = z;
+    }
+
     public Edge getIncident() {
         return incident;
     }
@@ -74,6 +95,6 @@ public class Vertex {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, (float) x, (float) y, (float) z);
+        return Objects.hash((float) x, (float) y, (float) z);
     }
 }

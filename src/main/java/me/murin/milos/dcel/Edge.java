@@ -12,7 +12,6 @@ public class Edge {
     private Edge twinEdge;
     private Face incidentFace;
     private Edge nextEdge;
-    private Edge prevEdge;
 
     private double a;
     private double b;
@@ -50,11 +49,6 @@ public class Edge {
                 return this.nextEdge.getOrigin().equals(origin);
             }
         }
-//        if (origin == this.origin) {
-//            if (this.nextEdge != null) {
-//                return this.nextEdge.getOrigin() == end;
-//            }
-//        }
         return false;
     }
 
@@ -106,14 +100,6 @@ public class Edge {
         line.setEndPoint(nextOrigin);
     }
 
-    public Edge getPrevEdge() {
-        return prevEdge;
-    }
-
-    public void setPrevEdge(Edge prevEdge) {
-        this.prevEdge = prevEdge;
-    }
-
     public double testVertex(Vertex v) {
         return this.testPoint(v.getX(), v.getZ());
     }
@@ -143,6 +129,10 @@ public class Edge {
 
     public Vertex intersect(Line line) {
         return this.line.intersect(line);
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     @Override

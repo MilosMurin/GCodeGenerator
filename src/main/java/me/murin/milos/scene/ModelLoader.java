@@ -222,8 +222,6 @@ public class ModelLoader {
                         prev.setNextEdge(current);
                     }
 
-                    current.setPrevEdge(prev);
-
                     dcel1.addEdge(current);
                     prev = current;
                 }
@@ -238,7 +236,6 @@ public class ModelLoader {
                     }
 
                     current.setNextEdge(first);
-                    first.setPrevEdge(current);
                 }
                 dcel1.addFace(myFace);
             }
