@@ -2,8 +2,8 @@ package me.murin.milos;
 
 import me.murin.milos.render.Model;
 import me.murin.milos.render.Render;
-import me.murin.milos.roads.RoadList;
-import me.murin.milos.roads.loaders.RoadLoader;
+import me.murin.milos.listStuff.RoadList;
+import me.murin.milos.roads.RoadLoader;
 import me.murin.milos.scene.Camera;
 import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
@@ -13,9 +13,7 @@ import me.murin.milos.utils.Intersectorator;
 import me.murin.milos.utils.MouseInput;
 import org.joml.Vector2f;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Main implements AppLogic {
 
@@ -34,14 +32,15 @@ public class Main implements AppLogic {
     private static final float MOVEMENT_SPEED = 0.01f;
 
 
-    private static final String MODEL = MODEL_PATH + TESTMINI_PATH;
-    private static final String ROADS = RES_PATH + TEST_OSM;
+    private static final String MODEL = MODEL_PATH + TEST_PATH;
+    private static final String ROADS = RES_PATH + MAP_OSM;
 
     private boolean dcelVisible = false;
     private Model mainModel;
     private Model dcelModel;
     private Model roadModel;
     private Model intersectModel;
+    private Intersectorator intersectorator;
 
     public static void main(String[] args) {
 
@@ -58,6 +57,7 @@ public class Main implements AppLogic {
     @Override
     public void init(Window window, Scene scene, Render render) {
         window.getInputManager().track(GLFW_KEY_Q);
+        window.getInputManager().track(GLFW_KEY_I);
 
         mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL, scene.getTextureCache());
         addModelAndEntity(scene, mainModel, "mainEntity", true);
@@ -68,12 +68,9 @@ public class Main implements AppLogic {
         RoadLoader rl = new RoadLoader(ROADS);
         RoadList roadList = rl.getRoadList();
         roadModel = roadList.getModel();
-        Entity en = addModelAndEntity(scene, roadModel, "roadEntity", true);
+        addModelAndEntity(scene, roadModel, "roadEntity", true);
 
-        var intersectorator = new Intersectorator(roadList.getStarts(), mainModel.getDcel());
-        intersectorator.intersect();
-        intersectModel = intersectorator.getResult().getModel();
-        addModelAndEntity(scene, intersectModel, "intersectEntity", true);
+        intersectorator = new Intersectorator(roadList.getStarts(), mainModel.getDcel());
     }
 
     public Entity addModelAndEntity(Scene scene, Model model, String entityId, boolean visible) {
@@ -101,6 +98,12 @@ public class Main implements AppLogic {
             camera.moveCloser(move);
         } else if (input.isKeyPressed(GLFW_KEY_S)) {
             camera.moveFurther(move);
+        }
+
+        if (input.wasReleased(GLFW_KEY_I)) {
+            intersectorator.intersect();
+            intersectModel = intersectorator.getResult().getModel();
+            addModelAndEntity(scene, intersectModel, "intersectEntity", true);
         }
 
         MouseInput mInput = input.getMouseInput();

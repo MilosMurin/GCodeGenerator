@@ -41,7 +41,7 @@ import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
 
 public class ModelLoader {
 
-    private static final List<DoublyConnectedEdgeList> dcels = new ArrayList<>();
+    private static List<DoublyConnectedEdgeList> dcels = new ArrayList<>();
     private static boolean makeDcel = false;
 
     private ModelLoader() { }
@@ -105,6 +105,7 @@ public class ModelLoader {
         Model model = new Model(modelId, materialList);
         if (makeDcel) {
             model.createDcelModel(dcels);
+            dcels = new ArrayList<>();
         }
         return model;
 
@@ -162,7 +163,7 @@ public class ModelLoader {
             data[pos++] = texCoord.y();
             data[pos++] = texCoord.z();
             if (makeDcel) {
-                dcel1.addVertex(new Vertex((pos / 3) - 1, data[pos - 3], data[pos - 2], data[pos - 1]));
+                dcel1.addVertex(new Vertex((pos / 3) - 1, texCoord.x(), texCoord.y(), texCoord.z()));
             }
         }
         return data;
@@ -242,18 +243,6 @@ public class ModelLoader {
         }
 
         return indices.stream().mapToInt(Integer::intValue).toArray();
-    }
-
-    public static Model getDcelModel() {
-        List<Material> materials = new ArrayList<>();
-        Material material = new Material();
-
-        for (DoublyConnectedEdgeList dcl : dcels) {
-            material.getMeshList().add(dcl.getMesh());
-        }
-
-        materials.add(material);
-        return new Model("dcelModel", materials);
     }
 
 }

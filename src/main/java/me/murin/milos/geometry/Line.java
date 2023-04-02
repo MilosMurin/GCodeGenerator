@@ -19,8 +19,6 @@ public class Line {
     private double tStart = Double.MAX_VALUE;
     private double tEnd = Double.MIN_VALUE;
 
-    private Line next;
-
 
     public Line(double pointX, double pointY, double pointZ, double vectorX, double vectorY, double vectorZ) {
         this.x = pointX;
@@ -106,7 +104,7 @@ public class Line {
             System.out.printf("Line x=%f+%ft; y=%f+%ft; z=%f+%ft\n", this.x, a, y, b, this.z, c);
             System.out.printf("Point x=%f; z=%f\n", x, z);
             System.out.printf("t x=%f; z=%f\n", xt, zt);
-            throw new IllegalArgumentException("Node cannot be set on the line!");
+            throw new IllegalArgumentException("Vertex cannot be set on the line!");
         }
         return xt;
     }
@@ -122,18 +120,6 @@ public class Line {
 
     public void setEndPoint(Vertex end) {
         tEnd = getT(end);
-    }
-
-    public Line getNext() {
-        return next;
-    }
-
-    public void setNext(Line next) {
-        this.next = next;
-    }
-
-    public boolean hasNext() {
-        return this.next != null;
     }
 
     public Vertex intersect(Line other) {

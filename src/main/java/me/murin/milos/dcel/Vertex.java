@@ -1,7 +1,6 @@
 package me.murin.milos.dcel;
 
 import info.pavie.basicosmparser.model.Node;
-import me.murin.milos.utils.Axis;
 import me.murin.milos.utils.Utils;
 
 import java.util.Objects;
@@ -15,7 +14,7 @@ public class Vertex {
     private Edge incident;
 
     public Vertex(Node node) {
-        this(-1, Utils.getCoordFromNode(node, Axis.X), 1, Utils.getCoordFromNode(node, Axis.Z));
+        this(-1, node.getLat(), 1, node.getLon());
     }
 
     public Vertex(double x, double y, double z) {

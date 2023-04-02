@@ -1,15 +1,14 @@
-package me.murin.milos.roads;
+package me.murin.milos.listStuff;
 
 import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.Road;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.utils.Axis;
-import me.murin.milos.utils.ListWithModel;
+import me.murin.milos.listStuff.ListWithModel;
 import me.murin.milos.utils.Utils;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_LINES;
@@ -17,22 +16,29 @@ import static org.lwjgl.opengl.GL11.GL_LINES;
 public class RoadList extends ListWithModel {
 
     private final ArrayList<Road> starts = new ArrayList<>();
-    private int nextNodeId = 0;
+    private int extVertexId = 0;
 
-    private final HashSet<Vertex> vertices = new HashSet<>();
+    private final ArrayList<Vertex> vertices = new ArrayList<>();
 
     public void addVertex(Vertex vertex) {
-        if (vertices.add(vertex)) {
-            vertex.setId(nextNodeId++);
-            testExtremes(Axis.X, vertex.getX());
-            testExtremes(Axis.Z, vertex.getZ());
-            invalidateModel();
-        }
+        vertices.add(vertex);
+        vertex.setId(extVertexId++);
+        testExtremes(vertex);
+        invalidateModel();
     }
 
     public void addStartRoad(Road start) {
         starts.add(start);
         invalidateModel();
+    }
+
+    public void adjustToModel(float sizeX, float sizeZ) {
+        double scaleX = sizeX / (getMax(Axis.X) - getMin(Axis.X));
+        double scaleZ = sizeZ / (getMax(Axis.Z) - getMin(Axis.Z));
+        for (Vertex v : vertices) {
+            Utils.adjustCoordOnAxis(v, Axis.X, getMin(Axis.X), scaleX);
+            Utils.adjustCoordOnAxis(v, Axis.Z, getMin(Axis.Z), scaleZ);
+        }
     }
 
     public void adjustToScale() {

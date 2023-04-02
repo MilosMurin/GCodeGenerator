@@ -1,8 +1,10 @@
-package me.murin.milos.utils;
+package me.murin.milos.listStuff;
 
+import me.murin.milos.dcel.Vertex;
 import me.murin.milos.render.Material;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.render.Model;
+import me.murin.milos.utils.Axis;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
@@ -10,11 +12,7 @@ import java.util.List;
 
 public abstract class ListWithModel {
 
-
-    private final double[] minimums = new double[] {Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE}; // 0 - x, 1 - y,
-    // 2 - z
-    private final double[] maximums = new double[] {Double.MIN_VALUE, Double.MIN_VALUE, Double.MIN_VALUE}; // 0 - x, 1 - y,
-    // 2 - z
+    protected final Extremes extremes = new Extremes();
 
     protected Model model;
     private boolean modelValid = false;
@@ -42,20 +40,16 @@ public abstract class ListWithModel {
         this.validateModel();
     }
 
-    protected void testExtremes(Axis axis, double amount) {
-        if (amount < getMin(axis)) {
-            minimums[axis.getId()] = amount;
-        } else if (amount > getMax(axis)) {
-            maximums[axis.getId()] = amount;
-        }
+    protected void testExtremes(Vertex vertex) {
+        extremes.testExtremes2D(vertex);
     }
 
     protected double getMax(Axis axis) {
-        return maximums[axis.getId()];
+        return extremes.getMax(axis);
     }
 
     protected double getMin(Axis axis) {
-        return minimums[axis.getId()];
+        return extremes.getMin(axis);
     }
 
     protected void invalidateModel() {

@@ -5,25 +5,26 @@ import me.murin.milos.dcel.Edge;
 import me.murin.milos.dcel.Face;
 import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.Line;
-import me.murin.milos.geometry.LineList;
+import me.murin.milos.geometry.PointPair;
 import me.murin.milos.geometry.Road;
+import me.murin.milos.listStuff.PointPairList;
 
 import java.util.List;
 
 public class Intersectorator {
 
-    private List<Road> starts;
+    private List<Road> roads;
     private DoublyConnectedEdgeList dcel;
-    private LineList result;
+    private PointPairList result;
 
-    public Intersectorator(List<Road> starts, DoublyConnectedEdgeList dcel) {
-        this.starts = starts;
+    public Intersectorator(List<Road> roads, DoublyConnectedEdgeList dcel) {
+        this.roads = roads;
         this.dcel = dcel;
-        this.result = new LineList();
+        this.result = new PointPairList();
     }
 
     public void intersect() {
-        for (Road start : starts) {
+        for (Road start : roads) {
             // get the first face it intersects with
             // do:
             // 1.make intersection of road plane and face plane
@@ -37,27 +38,30 @@ public class Intersectorator {
             // if theres no next road go to the next one of the starts
 
 
-            // note: make also a list of nodes (that remember the lines going out of them and into them) for the
+            // note: make also a list of vertices (that remember the lines going out of them and into them) for the
             // traveling salesman problem
 
             Face face = dcel.getFaceForPoint(start.getFirst().getX(), start.getFirst().getZ());
             if (face == null) {
-                System.out.printf("Point (%f, %f) didnt find a face", start.getFirst().getX(), start.getFirst().getZ());
+                System.out.printf("Point (%f, %f) didnt find a face\n", start.getFirst().getX(),
+                        start.getFirst().getZ());
                 continue;
             }
             Road road = start;
-            Vertex end = null;
-            Line prev = null;
+            Vertex endPoint = null, startPoint;
+            PointPair prev = null;
             Edge intersected = null; // the line that was crossed to get to this face
             Edge intersect;
             Line lineIntersection;
             while (road != null) { // will not work if the last road goes through more faces
                 lineIntersection = face.intersection(road);
-                if (end == null) { // if this is the first road set the starting point as the start of the road
-                    lineIntersection.setStartPoint(lineIntersection.getPointOnLine(road.getFirst()));
-                    result.addVertex(lineIntersection.getStartPoint());
+                if (endPoint == null) { // if this is the first road set the starting point as the start of the road
+                    startPoint = lineIntersection.getPointOnLine(road.getFirst());
+//                    lineIntersection.setStartPoint(startPoint);
+                    result.addVertex(startPoint);
                 } else { // othervise set it as the ending point of the previous road
-                    lineIntersection.setStartPoint(end);
+//                    lineIntersection.setStartPoint(endPoint);
+                    startPoint = endPoint;
                 }
                 // test if the road ending is within the face
                 boolean endInFace = face.isPointInFace(road.getLast());
@@ -67,7 +71,7 @@ public class Intersectorator {
                 // get rewritten
                 if (endInFace) {
                     // set the ending point
-                    end = lineIntersection.getPointOnLine(road.getLast());
+                    endPoint = lineIntersection.getPointOnLine(road.getLast());
                     // get next road
                     road = road.getNext();
                     intersected = null;
@@ -83,7 +87,6 @@ public class Intersectorator {
                                     // an edge with no twin edge is ont the edge of the model
                                     break;
                                 }
-                                // TODO: save the result and if nothing else was found then use this one
                             } else  {
                                 if (!intersect.equals(intersected.getTwinEdge())) {
                                     break;
@@ -96,25 +99,11 @@ public class Intersectorator {
                         }
                         v = intersect.intersect(lineIntersection);
                     }
-                    intersected = intersect;
                     if (v == null) {
-                        System.out.println("Line:");
-                        System.out.println(lineIntersection);
-                        System.out.println("Edges:");
-                        Edge e = face.getFirstEdge();
-                        System.out.println(e.getLine());
-                        e = e.getNextEdge();
-                        System.out.println(e.getLine());
-                        e = e.getNextEdge();
-                        System.out.println(e.getLine());
-                        System.out.println("Face:");
-                        System.out.println(face);
-                        System.out.println("Road:");
-                        System.out.println(road);
-                        throw new IllegalStateException("The line has no intersections with any of the edges?????");
+                        break;
                     }
-                    lineIntersection.setEndPoint(v);
-                    end = v;
+                    intersected = intersect;
+                    endPoint = v;
                     // set next face based on the edge that it intersects with
                     Edge twin = intersect.getTwinEdge();
                     if (twin == null) {
@@ -123,18 +112,19 @@ public class Intersectorator {
                     }
                     face = twin.getIncidentFace();
                 }
-                result.addVertex(end);
+                result.addVertex(endPoint);
+                PointPair pp = new PointPair(startPoint, endPoint);
                 if (prev != null) {
-                    prev.setNext(lineIntersection);
+                    prev.setNext(pp);
                 } else {
-                    result.addLine(lineIntersection);
+                    result.addLine(pp);
                 }
-                prev = lineIntersection;
+                prev = pp;
             }
         }
     }
 
-    public LineList getResult() {
+    public PointPairList getResult() {
         if (result.isEmpty()) {
             intersect();
         }

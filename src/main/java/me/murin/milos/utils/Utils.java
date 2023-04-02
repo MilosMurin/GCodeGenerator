@@ -1,7 +1,6 @@
 package me.murin.milos.utils;
 
 import info.pavie.basicosmparser.model.Element;
-import info.pavie.basicosmparser.model.Node;
 import info.pavie.basicosmparser.model.Way;
 import me.murin.milos.dcel.Vertex;
 
@@ -49,39 +48,11 @@ public class Utils {
         return null;
     }
 
-    /**
-     * Helper method to not make mistakes :D
-     * Converts longitude and latitude to an axis
-     * X - Latitude
-     * Y - DOES NOT EXIST throws an error
-     * Z - Longitude
-     *
-     * @param node the node to get the lat and lon from
-     * @param axis the axis to get
-     * @return a double containing coordinate on the given axis
-     */
-    public static double getCoordFromNode(Node node, Axis axis) {
-        return switch (axis) {
-            case X -> node.getLat();
-            case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
-            case Z -> node.getLon();
-        };
-    }
-
-    public static void adjustCoordOnAxis(Node node, Axis axis, double min, double scale) {
-        switch (axis) {
-            // TODO: Change -1 based on the origin position
-            case X -> node.setLat((node.getLat() - min) * scale - 1); // -1 is for origin position
-            case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
-            case Z -> node.setLon((node.getLon() - min) * scale - 1);
-        }
-    }
-
     public static void adjustCoordOnAxis(Vertex vertex, Axis axis, double min, double scale) {
         switch (axis) {
             // TODO: Change -1 based on the origin position
             case X -> vertex.setX((vertex.getX() - min) * scale - 1); // -1 is for origin position
-            case Y -> throw new IllegalArgumentException("Nodes dont have a y corrdinate!");
+//            case Y -> throw new IllegalArgumentException("Y axis does not get ajusted!");
             case Z -> vertex.setZ((vertex.getZ() - min) * scale - 1);
         }
     }

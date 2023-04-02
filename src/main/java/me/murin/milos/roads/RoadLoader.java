@@ -1,4 +1,4 @@
-package me.murin.milos.roads.loaders;
+package me.murin.milos.roads;
 
 import info.pavie.basicosmparser.controller.OSMParser;
 import info.pavie.basicosmparser.model.Element;

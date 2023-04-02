@@ -1,6 +1,8 @@
 package me.murin.milos.dcel;
 
+import me.murin.milos.listStuff.Extremes;
 import me.murin.milos.render.Mesh;
+import me.murin.milos.utils.Axis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,7 @@ public class DoublyConnectedEdgeList {
     private final List<Vertex> vertices;
     private final List<Face> faces;
 
-    private final double[] extremeX = new double[] {Double.MAX_VALUE, Double.MIN_VALUE}; // 0 - min, 1 - max
-    private final double[] extremeZ = new double[] {Double.MAX_VALUE, Double.MIN_VALUE};
+    private final Extremes extremes = new Extremes();
 
     public DoublyConnectedEdgeList() {
         this.edges = new ArrayList<>();
@@ -25,32 +26,7 @@ public class DoublyConnectedEdgeList {
 
     public void addVertex(Vertex vertex) {
         this.vertices.add(vertex);
-        if (vertex.getX() < extremeX[0]) {
-            extremeX[0] = vertex.getX();
-        } else if (vertex.getX() > extremeX[1]) {
-            extremeX[1] = vertex.getX();
-        }
-        if (vertex.getZ() < extremeZ[0]) {
-            extremeZ[0] = vertex.getZ();
-        } else if (vertex.getZ() > extremeZ[1]) {
-            extremeZ[1] = vertex.getZ();
-        }
-    }
-
-    public double getExtremeX(boolean max) {
-        if (max) {
-            return extremeX[1];
-        } else {
-            return extremeX[0];
-        }
-    }
-
-    public double getExtremeZ(boolean max) {
-        if (max) {
-            return extremeZ[1];
-        } else {
-            return extremeZ[0];
-        }
+        extremes.testExtremes(vertex);
     }
 
     public Vertex getVertex(int pos) {
@@ -59,10 +35,6 @@ public class DoublyConnectedEdgeList {
 
     public void addEdge(Edge edge) {
         this.edges.add(edge);
-    }
-
-    public Edge getEdge(int pos) {
-        return this.edges.get(pos);
     }
 
     /**
@@ -85,10 +57,6 @@ public class DoublyConnectedEdgeList {
     public void addFace(Face face) {
         face.finishUpFace();
         this.faces.add(face);
-    }
-
-    public Face getFace(int pos) {
-        return this.faces.get(pos);
     }
 
     public Face getFaceForPoint(double x, double z) {

@@ -1,6 +1,6 @@
-package me.murin.milos.roads.loaders;
+package me.murin.milos.roads;
 
-import me.murin.milos.roads.RoadList;
+import me.murin.milos.listStuff.RoadList;
 
 public abstract class RoadImporter {
 

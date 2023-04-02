@@ -42,16 +42,17 @@ public class MyMatrix {
 
     public void solve() {
         solved = true;
+        // TODO: Change to use isAlmostEqual to 0
         int col = 0;
-        if (matrix[0][col] != 0) {
+        if (!Utils.isAlmostEqual(matrix[0][col], 0)) {
             addMulToRow(0, 1, col);
             addMulToRow(0, 2, col);
             tRow = 0;
-        } else if (matrix[1][col] != 0) {
+        } else if (!Utils.isAlmostEqual(matrix[1][col], 0)) {
             addMulToRow(1, 0, col);
             addMulToRow(1, 2, col);
             tRow = 1;
-        } else if (matrix[2][col] != 0) {
+        } else if (!Utils.isAlmostEqual(matrix[2][col], 0)) {
             addMulToRow(2, 0, col);
             addMulToRow(2, 1, col);
             tRow = 2;
@@ -60,15 +61,15 @@ public class MyMatrix {
             return;
         }
         col = 1;
-        if (matrix[0][col] != 0 && tRow != 0) {
+        if (!Utils.isAlmostEqual(matrix[0][col], 0) && tRow != 0) {
             addMulToRow(0, 1, col);
             addMulToRow(0, 2, col);
             sRow = 0;
-        } else if (matrix[1][col] != 0 && tRow != 1) {
+        } else if (!Utils.isAlmostEqual(matrix[1][col], 0) && tRow != 1) {
             addMulToRow(1, 0, col);
             addMulToRow(1, 2, col);
             sRow = 1;
-        } else if (matrix[2][col] != 0 && tRow != 2) {
+        } else if (!Utils.isAlmostEqual(matrix[2][col], 0) && tRow != 2) {
             addMulToRow(2, 0, col);
             addMulToRow(2, 1, col);
             sRow = 2;
@@ -116,7 +117,9 @@ public class MyMatrix {
     }
 
     public boolean isNotZeroEqualsZero(int row) {
-        return matrix[row][0] != 0 || matrix[row][1] != 0 || result[row] != 0;
+        return !Utils.isAlmostEqual(matrix[row][0], 0) || !Utils.isAlmostEqual(matrix[row][1], 0) ||
+                !Utils.isAlmostEqual(result[row], 0);
+//        return matrix[row][0] != 0 || matrix[row][1] != 0 || result[row] != 0;
     }
 
     public void addMulToRow(int fromRow, int toRow, int col) {

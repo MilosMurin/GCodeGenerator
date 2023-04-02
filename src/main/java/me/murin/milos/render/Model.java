@@ -9,9 +9,9 @@ import java.util.List;
 public class Model {
 
     private final String id;
-    private List<Material> materialList;
+    private final List<Material> materialList;
 
-    private List<Entity> entityList;
+    private final List<Entity> entityList;
 
     private Model dcelModel;
 
