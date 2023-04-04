@@ -1,13 +1,14 @@
 package me.murin.milos;
 
+import me.murin.milos.listStuff.RoadList;
 import me.murin.milos.render.Model;
 import me.murin.milos.render.Render;
-import me.murin.milos.listStuff.RoadList;
 import me.murin.milos.roads.RoadLoader;
 import me.murin.milos.scene.Camera;
 import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
 import me.murin.milos.scene.Scene;
+import me.murin.milos.utils.Axis;
 import me.murin.milos.utils.GCodeFileWriter;
 import me.murin.milos.utils.InputManager;
 import me.murin.milos.utils.Intersectorator;
@@ -16,7 +17,10 @@ import org.joml.Vector2f;
 
 import java.io.IOException;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_I;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 
 public class Main implements AppLogic {
 
@@ -27,6 +31,7 @@ public class Main implements AppLogic {
     private static final String TESTFULL_PATH = "test/testFull.obj";
     private static final String TESTSMALL_PATH = "test/testSmall.obj";
     private static final String TESTMINI_PATH = "test/testMini.obj";
+    private static final String NEWTEST_PATH = "newTest/testTest.obj";
 
     private static final String MAP_OSM = "osm/map.osm";
     private static final String TEST_OSM = "osm/test.osm";
@@ -35,7 +40,7 @@ public class Main implements AppLogic {
     private static final float MOVEMENT_SPEED = 0.01f;
 
 
-    private static final String MODEL = MODEL_PATH + TESTSMALL_PATH;
+    private static final String MODEL = MODEL_PATH + NEWTEST_PATH;
     private static final String ROADS = RES_PATH + TEST_OSM;
 
     private boolean dcelVisible = false;
@@ -68,8 +73,13 @@ public class Main implements AppLogic {
         dcelModel = mainModel.getDcelModel();
         addModelAndEntity(scene, dcelModel, "dcelEntity", dcelVisible);
 
+        scene.getCamera().setYCoord((float) (2 *
+                        Math.max(mainModel.getExtremes().getSize(Axis.X), mainModel.getExtremes().getSize(Axis.Z))));
+
         RoadLoader rl = new RoadLoader(ROADS);
         RoadList roadList = rl.getRoadList();
+        roadList.adjustToModel((float) mainModel.getExtremes().getSize(Axis.X),
+                (float) mainModel.getExtremes().getSize(Axis.Z), mainModel.getExtremes().getMax(Axis.Y) + 1);
         roadModel = roadList.getModel();
         addModelAndEntity(scene, roadModel, "roadEntity", true);
 

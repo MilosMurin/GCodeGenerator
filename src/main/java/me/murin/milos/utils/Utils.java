@@ -49,12 +49,13 @@ public class Utils {
         return null;
     }
 
-    public static void adjustCoordOnAxis(Vertex vertex, Axis axis, double min, double scale) {
+    public static void adjustCoordOnAxis(Vertex vertex, Axis axis, double min, double scale, double diffX,
+            double diffZ) {
         switch (axis) {
             // TODO: Change -1 based on the origin position
-            case X -> vertex.setX((vertex.getX() - min) * scale - 1); // -1 is for origin position
+            case X -> vertex.setX((vertex.getX() - min) * scale - diffX); // -1 is for origin position
 //            case Y -> throw new IllegalArgumentException("Y axis does not get ajusted!");
-            case Z -> vertex.setZ((vertex.getZ() - min) * scale - 1);
+            case Z -> vertex.setZ((vertex.getZ() - min) * scale - diffZ);
         }
     }
 

@@ -1,6 +1,7 @@
 package me.murin.milos.render;
 
 import me.murin.milos.dcel.DoublyConnectedEdgeList;
+import me.murin.milos.listStuff.Extremes;
 import me.murin.milos.scene.Entity;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ public class Model {
 
     private Model dcelModel;
 
+    private Extremes extremes;
+
     private boolean visible = true;
 
     private List<DoublyConnectedEdgeList> dcels;
@@ -23,6 +26,7 @@ public class Model {
         this.id = id;
         this.materialList = materialList;
         this.entityList = new ArrayList<>();
+        this.extremes = new Extremes();
     }
 
     public void cleanup() {
@@ -60,10 +64,12 @@ public class Model {
 
         for (DoublyConnectedEdgeList dcl : dcels) {
             material.getMeshList().add(dcl.getMesh());
+            extremes.testExtremes(dcl.getExtremes());
         }
 
         materials.add(material);
         dcelModel = new Model(id + "Dcel", materials);
+        dcelModel.extremes.testExtremes(this.extremes);
     }
 
     public Model getDcelModel() {
@@ -74,7 +80,7 @@ public class Model {
         return dcels.get(0);
     }
 
-
-
-
+    public Extremes getExtremes() {
+        return extremes;
+    }
 }

@@ -2,7 +2,6 @@ package me.murin.milos.dcel;
 
 import me.murin.milos.listStuff.Extremes;
 import me.murin.milos.render.Mesh;
-import me.murin.milos.utils.Axis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,4 +90,7 @@ public class DoublyConnectedEdgeList {
         return new Mesh(vertexBuffer, indices, GL_LINES);
     }
 
+    public Extremes getExtremes() {
+        return extremes;
+    }
 }

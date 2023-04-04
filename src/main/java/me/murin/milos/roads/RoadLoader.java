@@ -46,7 +46,6 @@ public class RoadLoader extends RoadImporter {
                     }
                 }
             }
-            roadList.adjustToScale();
         } catch (IOException | SAXException e) {
             e.printStackTrace();
         }

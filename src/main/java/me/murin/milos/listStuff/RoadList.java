@@ -4,7 +4,6 @@ import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.Road;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.utils.Axis;
-import me.murin.milos.listStuff.ListWithModel;
 import me.murin.milos.utils.Utils;
 import org.joml.Vector4f;
 
@@ -32,22 +31,15 @@ public class RoadList extends ListWithModel {
         invalidateModel();
     }
 
-    public void adjustToModel(float sizeX, float sizeZ) {
+    public void adjustToModel(float sizeX, float sizeZ, double y) {
         double scaleX = sizeX / (getMax(Axis.X) - getMin(Axis.X));
         double scaleZ = sizeZ / (getMax(Axis.Z) - getMin(Axis.Z));
+        double halfX = sizeX / 2;
+        double halfZ = sizeZ / 2;
         for (Vertex v : vertices) {
-            Utils.adjustCoordOnAxis(v, Axis.X, getMin(Axis.X), scaleX);
-            Utils.adjustCoordOnAxis(v, Axis.Z, getMin(Axis.Z), scaleZ);
-        }
-    }
-
-    public void adjustToScale() {
-        // TODO: Chnage the 2 to the size of the base model
-        double scaleX = 2 / (getMax(Axis.X) - getMin(Axis.X));
-        double scaleZ = 2 / (getMax(Axis.Z) - getMin(Axis.Z));
-        for (Vertex v : vertices) {
-            Utils.adjustCoordOnAxis(v, Axis.X, getMin(Axis.X), scaleX);
-            Utils.adjustCoordOnAxis(v, Axis.Z, getMin(Axis.Z), scaleZ);
+            Utils.adjustCoordOnAxis(v, Axis.X, getMin(Axis.X), scaleX, halfX, halfZ);
+            v.setY(y);
+            Utils.adjustCoordOnAxis(v, Axis.Z, getMin(Axis.Z), scaleZ, halfX, halfZ);
         }
     }
 

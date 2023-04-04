@@ -21,6 +21,7 @@ public class Intersectorator {
         this.roads = roads;
         this.dcel = dcel;
         this.result = new PointPairList();
+        this.result.changeSize(this.dcel.getExtremes().getSize(Axis.X), this.dcel.getExtremes().getSize(Axis.Z));
     }
 
     public void intersect() {
@@ -57,10 +58,8 @@ public class Intersectorator {
                 lineIntersection = face.intersection(road);
                 if (endPoint == null) { // if this is the first road set the starting point as the start of the road
                     startPoint = lineIntersection.getPointOnLine(road.getFirst());
-//                    lineIntersection.setStartPoint(startPoint);
                     result.addVertex(startPoint);
                 } else { // othervise set it as the ending point of the previous road
-//                    lineIntersection.setStartPoint(endPoint);
                     startPoint = endPoint;
                 }
                 // test if the road ending is within the face

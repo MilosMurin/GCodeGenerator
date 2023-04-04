@@ -4,10 +4,8 @@ import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.PointPair;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.utils.Axis;
-import me.murin.milos.utils.GCodeFileWriter;
 import org.joml.Vector4f;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,7 +141,6 @@ public class PointPairList extends ListWithModel {
 
 
     public enum OriginPosition {
-        // TODO: synchronize with printer
         CENTER(-1, -1),
         TOP_RIGHT(1, 1), // MAX_MAX
         TOP_LEFT(-2, 0), // MAX_MIN
