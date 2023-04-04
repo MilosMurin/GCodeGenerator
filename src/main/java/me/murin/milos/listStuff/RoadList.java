@@ -26,6 +26,16 @@ public class RoadList extends ListWithModel {
         invalidateModel();
     }
 
+    public Road addRoad(int sId, int eId, Road prev) {
+        Road road = new Road(vertices.get(sId), vertices.get(eId));
+        if (prev != null) {
+            prev.setNext(road);
+        } else {
+            starts.add(road);
+        }
+        return road;
+    }
+
     public void addStartRoad(Road start) {
         starts.add(start);
         invalidateModel();

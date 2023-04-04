@@ -3,7 +3,7 @@ package me.murin.milos;
 import me.murin.milos.listStuff.RoadList;
 import me.murin.milos.render.Model;
 import me.murin.milos.render.Render;
-import me.murin.milos.roads.RoadLoader;
+import me.murin.milos.roads.RoadOsmLoader;
 import me.murin.milos.scene.Camera;
 import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
@@ -76,7 +76,7 @@ public class Main implements AppLogic {
         scene.getCamera().setYCoord((float) (2 *
                         Math.max(mainModel.getExtremes().getSize(Axis.X), mainModel.getExtremes().getSize(Axis.Z))));
 
-        RoadLoader rl = new RoadLoader(ROADS);
+        RoadOsmLoader rl = new RoadOsmLoader(ROADS);
         RoadList roadList = rl.getRoadList();
         roadList.adjustToModel((float) mainModel.getExtremes().getSize(Axis.X),
                 (float) mainModel.getExtremes().getSize(Axis.Z), mainModel.getExtremes().getMax(Axis.Y) + 1);
