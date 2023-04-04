@@ -12,11 +12,23 @@ public class Camera {
     private Vector3f up;
     private Matrix4f viewMatrix;
 
+    private float t = 0;
+    private float a = 0;
+    private float b = 0;
+    private float c = 0;
+
     public Camera() {
         position = new Vector3f();
         rotation = new Vector2f();
         up = new Vector3f();
         viewMatrix = new Matrix4f();
+        defaultPosition();
+    }
+
+    public void defaultPosition() {
+        rotation.set((float) Math.PI / 2, (float) Math.PI / 2);
+        position.set(0, 0, 4f); // sets the default position a bit back to see the model
+        recalculate();
     }
 
     public void addRotation(float x, float y) {
@@ -43,16 +55,6 @@ public class Camera {
                 .translate(-position.x, -position.y, -position.z)
                 .rotateX(rotation.x)
                 .rotateY(rotation.y);
-    }
-
-    public void setPosition(float x, float y, float z) {
-        position.set(x, y, z);
-        recalculate();
-    }
-
-    public void setRotation(float x, float y) {
-        rotation.set(x, y);
-        recalculate();
     }
 
     public Vector3f getPosition() {

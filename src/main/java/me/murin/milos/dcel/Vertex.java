@@ -84,6 +84,10 @@ public class Vertex {
                 Utils.isAlmostEqual(this.z, other.z);
     }
 
+    public void transform() {
+
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Vertex vertex) {

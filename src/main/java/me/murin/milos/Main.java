@@ -8,10 +8,13 @@ import me.murin.milos.scene.Camera;
 import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
 import me.murin.milos.scene.Scene;
+import me.murin.milos.utils.GCodeFileWriter;
 import me.murin.milos.utils.InputManager;
 import me.murin.milos.utils.Intersectorator;
 import me.murin.milos.utils.MouseInput;
 import org.joml.Vector2f;
+
+import java.io.IOException;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -32,8 +35,8 @@ public class Main implements AppLogic {
     private static final float MOVEMENT_SPEED = 0.01f;
 
 
-    private static final String MODEL = MODEL_PATH + TEST_PATH;
-    private static final String ROADS = RES_PATH + MAP_OSM;
+    private static final String MODEL = MODEL_PATH + TESTSMALL_PATH;
+    private static final String ROADS = RES_PATH + TEST_OSM;
 
     private boolean dcelVisible = false;
     private Model mainModel;
@@ -104,6 +107,13 @@ public class Main implements AppLogic {
             intersectorator.intersect();
             intersectModel = intersectorator.getResult().getModel();
             addModelAndEntity(scene, intersectModel, "intersectEntity", true);
+            try {
+                String gcode = intersectorator.getResult().generateGCode();
+                GCodeFileWriter writer = new GCodeFileWriter("out.gcode");
+                writer.write(gcode);
+                writer.close();
+                System.out.println(gcode);
+            } catch (IOException ignored) { }
         }
 
         MouseInput mInput = input.getMouseInput();

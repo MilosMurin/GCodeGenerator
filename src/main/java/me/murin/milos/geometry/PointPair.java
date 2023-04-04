@@ -4,6 +4,8 @@ import me.murin.milos.dcel.Vertex;
 
 public class PointPair {
 
+    public static final double FIL_FOR_CM = 0.031354;
+
     private Vertex start;
     private Vertex end;
 
@@ -40,5 +42,15 @@ public class PointPair {
 
     public void setEnd(Vertex end) {
         this.end = end;
+    }
+
+    public double getFilamentAmount() {
+        Vertex vector = new Vertex(end.getX() - start.getX(), end.getY() - start.getY(), end.getZ() - start.getZ());
+        double size = Math.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2) + Math.pow(vector.getZ(), 2));
+        return size * FIL_FOR_CM;
+    }
+
+    public boolean endsInSame(PointPair pointPair) {
+        return this.end.equals(pointPair.end);
     }
 }

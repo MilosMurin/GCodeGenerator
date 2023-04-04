@@ -115,11 +115,14 @@ public class Intersectorator {
                 result.addVertex(endPoint);
                 PointPair pp = new PointPair(startPoint, endPoint);
                 if (prev != null) {
-                    prev.setNext(pp);
+                    if (!prev.endsInSame(pp)) {
+                        prev.setNext(pp);
+                        prev = pp;
+                    }
                 } else {
                     result.addLine(pp);
+                    prev = pp;
                 }
-                prev = pp;
             }
         }
     }

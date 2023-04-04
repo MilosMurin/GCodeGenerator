@@ -4,8 +4,10 @@ import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.PointPair;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.utils.Axis;
+import me.murin.milos.utils.GCodeFileWriter;
 import org.joml.Vector4f;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,11 @@ public class PointPairList extends ListWithModel {
 
     private double sizeX = 2;
     private double sizeZ = 2;
+
+    double scaleX = 0;
+    double scaleZ = 0;
+    double diffX = 0;
+    double diffZ = 0;
 
     public void addVertex(Vertex vertex) {
         vertices.add(vertex);
@@ -61,10 +68,10 @@ public class PointPairList extends ListWithModel {
 
     @Override
     protected Mesh getMesh() {
-        double scaleX = sizeX / (extremes.getSize(Axis.X));
-        double scaleZ = sizeZ / (extremes.getSize(Axis.X));
-        double diffX = extremes.getMax(Axis.X);
-        double diffZ = extremes.getMax(Axis.Z);
+        scaleX = sizeX / (extremes.getSize(Axis.X));
+        scaleZ = sizeZ / (extremes.getSize(Axis.X));
+        diffX = extremes.getMax(Axis.X);
+        diffZ = extremes.getMax(Axis.Z);
 
         // vertices
         float[] vertexBuffer = new float[vertices.size() * 3];
@@ -110,10 +117,29 @@ public class PointPairList extends ListWithModel {
         return lines.isEmpty();
     }
 
-    public void generateGCode() {
-        // TODO: This
+    public String generateGCode() {
+        StringBuilder str = new StringBuilder();
+        for (PointPair pointPair : lines){
+            str.append(getGcodeFromPoint(pointPair.getStart())).append("\n");
+            PointPair current = pointPair;
+            str.append(getGcodeFromPoint(current.getEnd()))
+                    .append(String.format(" E%f", current.getFilamentAmount())).append("\n");
+            while (current.hasNext()) {
+                current = current.getNext();
+                str.append(getGcodeFromPoint(current.getEnd()))
+                        .append(String.format(" E%f", current.getFilamentAmount())).append("\n");
+            }
+            // TODO: Add a move to another start (go up move to next start)
+        }
+        return str.toString();
     }
 
+    public String getGcodeFromPoint(Vertex vertex) {
+        return String.format("G1 X%.3f Y%.3f Z%.3f",
+                (float) ((vertex.getZ() - extremes.getMin(Axis.Z)) * scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
+                (float) ((vertex.getX() - extremes.getMin(Axis.X)) * scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
+                vertex.getY());
+    }
 
 
     public enum OriginPosition {
