@@ -30,7 +30,7 @@ public class RoadObjLoader extends RoadImporter {
                     if (split.length < 3) {
                         continue;
                     }
-                    prev = roadList.addRoad(Integer.parseInt(split[1]), Integer.parseInt(split[2]), prev);
+                    prev = roadList.addRoad(Integer.parseInt(split[1]) - 1, Integer.parseInt(split[2]) - 1, prev);
                 }
             }
             sc.close();
