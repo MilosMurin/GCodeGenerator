@@ -18,6 +18,7 @@ public class PointPairList extends ListWithModel {
     private final ArrayList<Vertex> vertices = new ArrayList<>();
     private final ArrayList<PointPair> lines = new ArrayList<>();
 
+    private PointPair previous = null;
 
     private OriginPosition originPosition = OriginPosition.CENTER;
 
@@ -38,7 +39,22 @@ public class PointPairList extends ListWithModel {
     }
 
     public void addLine(PointPair pointPair) {
-        lines.add(pointPair);
+        if (pointPair.getFilamentAmount() == 0) {
+            return;
+        }
+        if (previous != null) {
+            if (!previous.endsInSame(pointPair)) {
+                previous.setNext(pointPair);
+                previous = pointPair;
+            }
+        } else {
+            lines.add(pointPair);
+            previous = pointPair;
+        }
+    }
+
+    public void clearPrevious() {
+        this.previous = null;
     }
 
     public void changeY(double toAdd) {

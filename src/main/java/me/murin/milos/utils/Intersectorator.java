@@ -50,7 +50,6 @@ public class Intersectorator {
             }
             Road road = start;
             Vertex endPoint = null, startPoint;
-            PointPair prev = null;
             Edge intersected = null; // the line that was crossed to get to this face
             Edge intersect;
             Line lineIntersection;
@@ -112,17 +111,9 @@ public class Intersectorator {
                     face = twin.getIncidentFace();
                 }
                 result.addVertex(endPoint);
-                PointPair pp = new PointPair(startPoint, endPoint);
-                if (prev != null) {
-                    if (!prev.endsInSame(pp)) {
-                        prev.setNext(pp);
-                        prev = pp;
-                    }
-                } else {
-                    result.addLine(pp);
-                    prev = pp;
-                }
+                result.addLine(new PointPair(startPoint, endPoint));
             }
+            result.clearPrevious();
         }
     }
 
