@@ -4,8 +4,6 @@ import me.murin.milos.geometry.Line;
 
 public class Edge {
 
-    public static int twins = 0;
-
     private int id;
     private int edgeId; // 1 or 2
     private final Vertex origin;
@@ -40,7 +38,6 @@ public class Edge {
 
         this.twinEdge = twinEdge;
         twinEdge.setTwinEdge(this);
-        twins++;
     }
 
     public boolean isTwin(Vertex origin, Vertex end) {
