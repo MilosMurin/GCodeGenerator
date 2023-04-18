@@ -11,7 +11,6 @@ public class Vertex {
     private double x;
     private double y;
     private double z;
-    private Edge incident;
 
     public Vertex(Node node) {
         this(-1, node.getLat(), 1, node.getLon());
@@ -69,14 +68,6 @@ public class Vertex {
 
     public void setZ(double z) {
         this.z = z;
-    }
-
-    public Edge getIncident() {
-        return incident;
-    }
-
-    public void setIncident(Edge incident) {
-        this.incident = incident;
     }
 
     public boolean isPositionEqual(Vertex other) {
