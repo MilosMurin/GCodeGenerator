@@ -6,18 +6,17 @@ import me.murin.milos.dcel.Face;
 import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.Line;
 import me.murin.milos.geometry.PointPair;
-import me.murin.milos.geometry.Road;
 import me.murin.milos.listStuff.PointPairList;
 
 import java.util.List;
 
 public class Intersectorator {
 
-    private List<Road> roads;
+    private List<PointPair> roads;
     private DoublyConnectedEdgeList dcel;
     private PointPairList result;
 
-    public Intersectorator(List<Road> roads, DoublyConnectedEdgeList dcel) {
+    public Intersectorator(List<PointPair> roads, DoublyConnectedEdgeList dcel) {
         this.roads = roads;
         this.dcel = dcel;
         this.result = new PointPairList();
@@ -25,7 +24,7 @@ public class Intersectorator {
     }
 
     public void intersect() {
-        for (Road start : roads) {
+        for (PointPair start : roads) {
             // get the first face it intersects with
             // do:
             // 1.make intersection of road plane and face plane
@@ -42,13 +41,13 @@ public class Intersectorator {
             // note: make also a list of vertices (that remember the lines going out of them and into them) for the
             // traveling salesman problem
 
-            Face face = dcel.getFaceForPoint(start.getFirst().getX(), start.getFirst().getZ());
+            Face face = dcel.getFaceForPoint(start.getStart().getX(), start.getStart().getZ());
             if (face == null) {
-                System.out.printf("Point (%f, %f) didnt find a face\n", start.getFirst().getX(),
-                        start.getFirst().getZ());
+                System.out.printf("Point (%f, %f) didnt find a face\n", start.getStart().getX(),
+                        start.getStart().getZ());
                 continue;
             }
-            Road road = start;
+            PointPair road = start;
             Vertex endPoint = null, startPoint;
             Edge intersected = null; // the line that was crossed to get to this face
             Edge intersect;
@@ -56,20 +55,20 @@ public class Intersectorator {
             while (road != null) { // will not work if the last road goes through more faces
                 lineIntersection = face.intersection(road);
                 if (endPoint == null) { // if this is the first road set the starting point as the start of the road
-                    startPoint = lineIntersection.getPointOnLine(road.getFirst());
+                    startPoint = lineIntersection.getPointOnLine(road.getStart());
                     result.addVertex(startPoint);
                 } else { // othervise set it as the ending point of the previous road
                     startPoint = endPoint;
                 }
                 // test if the road ending is within the face
-                boolean endInFace = face.isPointInFace(road.getLast());
+                boolean endInFace = face.isPointInFace(road.getEnd());
                 // if endInFace is false set the end point of the line to the intersection
                 // set end bound to end of road
-                lineIntersection.setEndPoint(lineIntersection.getPointOnLine(road.getLast())); // if not end in face this will
+                lineIntersection.setEndPoint(lineIntersection.getPointOnLine(road.getEnd())); // if not end in face this will
                 // get rewritten
                 if (endInFace) {
                     // set the ending point
-                    endPoint = lineIntersection.getPointOnLine(road.getLast());
+                    endPoint = lineIntersection.getPointOnLine(road.getEnd());
                     // get next road
                     road = road.getNext();
                     intersected = null;

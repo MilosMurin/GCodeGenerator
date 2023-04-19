@@ -5,7 +5,7 @@ import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Node;
 import info.pavie.basicosmparser.model.Way;
 import me.murin.milos.dcel.Vertex;
-import me.murin.milos.geometry.Road;
+import me.murin.milos.geometry.PointPair;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -31,12 +31,12 @@ public class RoadOsmLoader extends RoadImporter {
                 if (way != null) {
                     if (isRoad(way)) {
                         Vertex prev = null, current;
-                        Road prevRoad = null;
+                        PointPair prevRoad = null;
                         for (Node n : way.getNodes()) {
                             current = new Vertex(n);
                             roadList.addVertex(current);
                             if (prev != null) {
-                                Road r = new Road(prev, current);
+                                PointPair r = new PointPair(prev, current);
                                 if (prevRoad != null) {
                                     prevRoad.setNext(r);
                                 } else {

@@ -1,7 +1,7 @@
 package me.murin.milos.listStuff;
 
 import me.murin.milos.dcel.Vertex;
-import me.murin.milos.geometry.Road;
+import me.murin.milos.geometry.PointPair;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.utils.Axis;
 import me.murin.milos.utils.Utils;
@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL11.GL_LINES;
 
 public class RoadList extends ListWithModel {
 
-    private final ArrayList<Road> starts = new ArrayList<>();
+    private final ArrayList<PointPair> starts = new ArrayList<>();
     private int extVertexId = 0;
 
     private final ArrayList<Vertex> vertices = new ArrayList<>();
@@ -26,17 +26,17 @@ public class RoadList extends ListWithModel {
         invalidateModel();
     }
 
-    public Road addRoad(int sId, int eId, Road prev) {
-        Road road = new Road(vertices.get(sId), vertices.get(eId));
+    public PointPair addRoad(int sId, int eId, PointPair prev) {
+        PointPair pp = new PointPair(vertices.get(sId), vertices.get(eId));
         if (prev != null) {
-            prev.setNext(road);
+            prev.setNext(pp);
         } else {
-            starts.add(road);
+            starts.add(pp);
         }
-        return road;
+        return pp;
     }
 
-    public void addStartRoad(Road start) {
+    public void addStartRoad(PointPair start) {
         starts.add(start);
         invalidateModel();
     }
@@ -67,22 +67,22 @@ public class RoadList extends ListWithModel {
 
         // indices
         List<Integer> indices = new ArrayList<>();
-        for (Road r : starts) {
-            Road current = r;
-            indices.add(current.getFirst().getId());
-            indices.add(current.getLast().getId());
+        for (PointPair r : starts) {
+            PointPair current = r;
+            indices.add(current.getStart().getId());
+            indices.add(current.getEnd().getId());
 
             while (current.hasNext()) {
                 current = current.getNext();
-                indices.add(current.getFirst().getId());
-                indices.add(current.getLast().getId());
+                indices.add(current.getStart().getId());
+                indices.add(current.getEnd().getId());
             }
         }
 
         return new Mesh(vertexBuffer, indices, GL_LINES);
     }
 
-    public ArrayList<Road> getStarts() {
+    public ArrayList<PointPair> getStarts() {
         return starts;
     }
 

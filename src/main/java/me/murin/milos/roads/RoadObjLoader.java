@@ -1,7 +1,7 @@
 package me.murin.milos.roads;
 
 import me.murin.milos.dcel.Vertex;
-import me.murin.milos.geometry.Road;
+import me.murin.milos.geometry.PointPair;
 
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -16,7 +16,7 @@ public class RoadObjLoader extends RoadImporter {
     public void load() {
         try {
             Scanner sc = new Scanner(file);
-            Road prev = null;
+            PointPair prev = null;
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 String[] split = line.split(" ");
