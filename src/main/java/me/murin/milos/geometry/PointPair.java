@@ -1,6 +1,7 @@
 package me.murin.milos.geometry;
 
 import me.murin.milos.dcel.Vertex;
+import org.joml.Vector3d;
 
 public class PointPair {
 
@@ -45,9 +46,8 @@ public class PointPair {
     }
 
     public double getFilamentAmount() {
-        Vertex vector = new Vertex(end.getX() - start.getX(), end.getY() - start.getY(), end.getZ() - start.getZ());
-        double size = Math.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2) + Math.pow(vector.getZ(), 2));
-        return size * FIL_FOR_CM;
+        Vector3d v3d = new Vector3d(end.getX() - start.getX(), end.getY() - start.getY(), end.getZ() - start.getZ());
+        return v3d.length() * FIL_FOR_CM;
     }
 
     public boolean endsInSame(PointPair pointPair) {

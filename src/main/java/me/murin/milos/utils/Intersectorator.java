@@ -19,6 +19,20 @@ public class Intersectorator {
     public Intersectorator(List<PointPair> roads, DoublyConnectedEdgeList dcel) {
         this.roads = roads;
         this.dcel = dcel;
+        resetResult();
+    }
+
+    public void setRoads(List<PointPair> roads) {
+        this.roads = roads;
+        resetResult();
+    }
+
+    public void setDcel(DoublyConnectedEdgeList dcel) {
+        this.dcel = dcel;
+        resetResult();
+    }
+
+    public void resetResult() {
         this.result = new PointPairList();
         this.result.changeSize(this.dcel.getExtremes().getSize(Axis.X), this.dcel.getExtremes().getSize(Axis.Z));
     }

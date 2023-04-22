@@ -59,6 +59,7 @@ public class Camera {
 
     public void setYCoord(float yCoord) {
         position.set(position.x(), position.y(), yCoord);
+        recalculate();
     }
 
     public Vector3f getPosition() {

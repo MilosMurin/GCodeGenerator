@@ -46,11 +46,15 @@ public class RoadList extends ListWithModel {
         double scaleZ = sizeZ / (getMax(Axis.Z) - getMin(Axis.Z));
         double halfX = sizeX / 2;
         double halfZ = sizeZ / 2;
+        double minX = getMin(Axis.X);
+        double minZ = getMin(Axis.Z);
         for (Vertex v : vertices) {
-            Utils.adjustCoordOnAxis(v, Axis.X, getMin(Axis.X), scaleX, halfX, halfZ);
+            Utils.adjustCoordOnAxis(v, Axis.X, minX, scaleX, halfX, halfZ);
             v.setY(y);
-            Utils.adjustCoordOnAxis(v, Axis.Z, getMin(Axis.Z), scaleZ, halfX, halfZ);
+            Utils.adjustCoordOnAxis(v, Axis.Z, minZ, scaleZ, halfX, halfZ);
+            testExtremes(v);
         }
+        invalidateModel();
     }
 
 
