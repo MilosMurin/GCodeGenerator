@@ -1,15 +1,14 @@
 package me.murin.milos.gcode;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class GCodeFileWriter {
 
-    private FileWriter writer;
+    private final FileWriter writer;
 
     public GCodeFileWriter(String path) throws IOException {
-        writer = new FileWriter(new File(path));
+        writer = new FileWriter(path);
     }
 
     public void write(String line) throws IOException {

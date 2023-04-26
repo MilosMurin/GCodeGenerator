@@ -10,9 +10,13 @@ import java.util.Scanner;
 
 public class GCodeReader {
 
-    private File file;
+    private final File file;
 
-    private Extremes extremes;
+    private final StringBuilder beforeGCode = new StringBuilder();
+    private final StringBuilder afterGCode = new StringBuilder();
+    private final Extremes extremes;
+    private boolean before = true;
+    private String lastLine = "";
 
     public GCodeReader(String path) {
         file = new File(path);
@@ -27,6 +31,22 @@ public class GCodeReader {
             Vertex v = getVertexFromGcode(line);
             if (v != null) {
                 extremes.testExtremes2D(v);
+            }
+
+            if (line.equals(";WIPE_START")) {
+                if (lastLine.startsWith("; stop printing object")) {
+                    before = false;
+                }
+            }
+
+            if (before) {
+                beforeGCode.append(line).append("\n");
+            } else {
+                afterGCode.append(line).append("\n");
+            }
+
+            if (!line.isEmpty()) {
+                lastLine = line;
             }
         }
 
@@ -58,5 +78,13 @@ public class GCodeReader {
 
     public Extremes getExtremes() {
         return extremes;
+    }
+
+    public String getBeforeGCode() {
+        return beforeGCode.toString();
+    }
+
+    public String getAfterGCode() {
+        return afterGCode.toString();
     }
 }

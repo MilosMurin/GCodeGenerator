@@ -55,7 +55,7 @@ public class Main implements AppLogic {
     private Model intersectModel = null;
     private RoadList roadList = null;
     private Intersectorator intersectorator;
-    private GCodeReader reader;
+    private GCodeReader reader = null;
 
     public static void main(String[] args) {
 
@@ -190,10 +190,6 @@ public class Main implements AppLogic {
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    // TODO: add gcode auto where it needs to be
-                    // (; stop printing object untitled.stl id:0 copy 0
-                    //  ; WIPE_START )
-                    // medzi tymito dvoma komentarmi
                 }
             }
         }
@@ -205,20 +201,24 @@ public class Main implements AppLogic {
         }
 
         if (input.wasReleased(GLFW_KEY_I)) {
-            if (intersectModel != null) {
-                intersectModel.cleanup();
-            }
-            intersectorator.intersect();
-            intersectModel = intersectorator.getResult().getModel();
-            addModelAndEntity(scene, intersectModel, "intersectEntity", true);
-            try {
-                String gcode = intersectorator.getResult().generateGCode(reader == null ? null : reader.getExtremes());
-                GCodeFileWriter writer = new GCodeFileWriter("out.gcode");
-                writer.write(gcode);
-                writer.close();
-                System.out.println(gcode);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (reader != null) {
+                if (intersectModel != null) {
+                    intersectModel.cleanup();
+                }
+                intersectorator.intersect();
+                intersectModel = intersectorator.getResult().getModel();
+                addModelAndEntity(scene, intersectModel, "intersectEntity", true);
+                try {
+                    String gcode = intersectorator.getResult().generateGCode(reader.getExtremes());
+                    GCodeFileWriter writer = new GCodeFileWriter("out.gcode");
+                    writer.write(reader.getBeforeGCode());
+                    writer.write(gcode);
+                    writer.write(reader.getAfterGCode());
+                    writer.close();
+                    System.out.println(gcode);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
