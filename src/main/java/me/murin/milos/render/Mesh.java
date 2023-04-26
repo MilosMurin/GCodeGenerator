@@ -3,25 +3,13 @@ package me.murin.milos.render;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL30.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL30.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL30.GL_FLOAT;
-import static org.lwjgl.opengl.GL30.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL30.glBindBuffer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glBufferData;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL30.glGenBuffers;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.opengl.GL30.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.*;
 
 public class Mesh {
 
@@ -29,6 +17,12 @@ public class Mesh {
     private int vaoId;
     private List<Integer> vboIdList;
     private int drawType = GL_TRIANGLES;
+
+    public Mesh(float[] positions, int[] indices, int drawType) {
+        this(positions, new float[positions.length / 3], indices);
+        this.drawType = drawType;
+    }
+
 
     public Mesh(float[] positions, List<Integer> indices, int drawType) {
         this(positions, new float[positions.length / 3], indices.stream().mapToInt(Integer::intValue).toArray());

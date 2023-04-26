@@ -3,10 +3,13 @@ package me.murin.milos.utils;
 import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Way;
 import me.murin.milos.dcel.Vertex;
+import me.murin.milos.geometry.PointPair;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Utils {
 
@@ -50,13 +53,29 @@ public class Utils {
     }
 
     public static void adjustCoordOnAxis(Vertex vertex, Axis axis, double min, double scale, double diffX,
-            double diffZ) {
+                                         double diffZ) {
         switch (axis) {
-            // TODO: Change -1 based on the origin position
             case X -> vertex.setX((vertex.getX() - min) * scale - diffX); // -1 is for origin position
 //            case Y -> throw new IllegalArgumentException("Y axis does not get ajusted!");
             case Z -> vertex.setZ((vertex.getZ() - min) * scale - diffZ);
         }
+    }
+
+    public static int[] fillIndicies(List<PointPair> lines) {
+        List<Integer> indices = new ArrayList<>();
+        for (PointPair l : lines) {
+            // fill indices
+            PointPair current = l;
+            indices.add(current.getStart().getId());
+            indices.add(current.getEnd().getId());
+
+            while (current.hasNext()) {
+                current = current.getNext();
+                indices.add(current.getStart().getId());
+                indices.add(current.getEnd().getId());
+            }
+        }
+        return indices.stream().mapToInt(Integer::intValue).toArray();
     }
 
 

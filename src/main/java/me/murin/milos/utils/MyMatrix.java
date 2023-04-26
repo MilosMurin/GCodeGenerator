@@ -42,7 +42,6 @@ public class MyMatrix {
 
     public void solve() {
         solved = true;
-        // TODO: Change to use isAlmostEqual to 0
         int col = 0;
         if (!Utils.isAlmostEqual(matrix[0][col], 0)) {
             addMulToRow(0, 1, col);

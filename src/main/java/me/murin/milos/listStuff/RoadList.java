@@ -8,7 +8,6 @@ import me.murin.milos.utils.Utils;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_LINES;
 
@@ -70,20 +69,8 @@ public class RoadList extends ListWithModel {
         }
 
         // indices
-        List<Integer> indices = new ArrayList<>();
-        for (PointPair r : starts) {
-            PointPair current = r;
-            indices.add(current.getStart().getId());
-            indices.add(current.getEnd().getId());
 
-            while (current.hasNext()) {
-                current = current.getNext();
-                indices.add(current.getStart().getId());
-                indices.add(current.getEnd().getId());
-            }
-        }
-
-        return new Mesh(vertexBuffer, indices, GL_LINES);
+        return new Mesh(vertexBuffer, Utils.fillIndicies(starts), GL_LINES);
     }
 
     public ArrayList<PointPair> getStarts() {

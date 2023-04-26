@@ -208,7 +208,7 @@ public class Main implements AppLogic {
             intersectModel = intersectorator.getResult().getModel();
             addModelAndEntity(scene, intersectModel, "intersectEntity", true);
             try {
-                String gcode = intersectorator.getResult().generateGCode(reader.getExtremes());
+                String gcode = intersectorator.getResult().generateGCode(reader == null ? null : reader.getExtremes());
                 GCodeFileWriter writer = new GCodeFileWriter("out.gcode");
                 writer.write(gcode);
                 writer.close();

@@ -5,10 +5,10 @@ import me.murin.milos.gcode.GCodeGenerator;
 import me.murin.milos.geometry.PointPair;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.utils.Axis;
+import me.murin.milos.utils.Utils;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_LINES;
 
@@ -23,7 +23,8 @@ public class PointPairList extends ListWithModel {
 
     private OriginPosition originPosition = OriginPosition.CENTER;
 
-    private double toAdd = 0.2f;
+    private double displayToAdd = 0.02f;
+    private double layerHeight = 0.2f;
 
     private double sizeX = 2;
     private double sizeZ = 2;
@@ -59,8 +60,12 @@ public class PointPairList extends ListWithModel {
     }
 
     public void changeY(double toAdd) {
-        this.toAdd = toAdd;
+        this.displayToAdd = toAdd;
         invalidateModel();
+    }
+
+    public void setLayerHeight(double layerHeight) {
+        this.layerHeight = layerHeight;
     }
 
     public void changeOriginPosition(OriginPosition originPosition) {
@@ -94,27 +99,14 @@ public class PointPairList extends ListWithModel {
             int id = v.getId();
             vertexBuffer[3 * id] =
                     (float) ((v.getX() - extremes.getMin(Axis.X)) * scaleX + originPosition.multiplyX * diffX);
-            vertexBuffer[3 * id + 1] = (float) (v.getY() + toAdd);
+            vertexBuffer[3 * id + 1] = (float) (v.getY() + displayToAdd);
             vertexBuffer[3 * id + 2] =
                     (float) ((v.getZ() - extremes.getMin(Axis.Z)) * scaleZ + originPosition.multiplyZ * diffZ);
         }
 
         // indices
-        List<Integer> indices = new ArrayList<>();
-        for (PointPair l : lines) {
-            // fill indices
-            PointPair current = l;
-            indices.add(current.getStart().getId());
-            indices.add(current.getEnd().getId());
 
-            while (current.hasNext()) {
-                current = current.getNext();
-                indices.add(current.getStart().getId());
-                indices.add(current.getEnd().getId());
-            }
-        }
-
-        return new Mesh(vertexBuffer, indices, GL_LINES);
+        return new Mesh(vertexBuffer, Utils.fillIndicies(lines), GL_LINES);
     }
 
     @Override
@@ -172,19 +164,19 @@ public class PointPairList extends ListWithModel {
 
     public String getGcodeFromPoint(Vertex vertex, Extremes extremes) {
         return String.format("G1 X%.3f Y%.3f Z%.3f",
-                (float) extremes.getMin(Axis.Z) + ((vertex.getZ() - this.extremes.getMin(Axis.Z)) *
-                        scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
-                (float) extremes.getMin(Axis.X) + ((vertex.getX() - this.extremes.getMin(Axis.X)) *
-                        scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
-                vertex.getY() + toAdd);
+                (float) (extremes == null ? 0 : extremes.getMin(Axis.Z)) +
+                        ((vertex.getZ() - this.extremes.getMin(Axis.Z)) * scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
+                (float) (extremes == null ? 0 : extremes.getMin(Axis.X)) +
+                        ((vertex.getX() - this.extremes.getMin(Axis.X)) * scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
+                vertex.getY() + layerHeight);
     }
 
     public String getGcodeFromPointWithMaxY(Vertex vertex, Extremes extremes) {
         return String.format("G1 X%.3f Y%.3f Z%.3f",
-                (float) extremes.getMin(Axis.Z) + ((vertex.getZ() - this.extremes.getMin(Axis.Z)) *
-                        scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
-                (float) extremes.getMin(Axis.X) + ((vertex.getX() - this.extremes.getMin(Axis.X)) *
-                        scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
+                (float) (extremes == null ? 0 : extremes.getMin(Axis.Z)) +
+                        ((vertex.getZ() - this.extremes.getMin(Axis.Z)) * scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
+                (float) (extremes == null ? 0 : extremes.getMin(Axis.X)) +
+                        ((vertex.getX() - this.extremes.getMin(Axis.X)) * scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
                 this.extremes.getMax(Axis.Y) + 1);
     }
 
