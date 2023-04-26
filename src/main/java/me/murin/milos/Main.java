@@ -1,5 +1,6 @@
 package me.murin.milos;
 
+import me.murin.milos.gcode.GCodeFileWriter;
 import me.murin.milos.gcode.GCodeReader;
 import me.murin.milos.listStuff.RoadList;
 import me.murin.milos.render.Model;
@@ -10,7 +11,10 @@ import me.murin.milos.scene.Camera;
 import me.murin.milos.scene.Entity;
 import me.murin.milos.scene.ModelLoader;
 import me.murin.milos.scene.Scene;
-import me.murin.milos.utils.*;
+import me.murin.milos.utils.Axis;
+import me.murin.milos.utils.InputManager;
+import me.murin.milos.utils.Intersectorator;
+import me.murin.milos.utils.MouseInput;
 import org.joml.Vector2f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -41,8 +45,8 @@ public class Main implements AppLogic {
     private static final float MOVEMENT_SPEED = 0.01f;
 
 
-    private static final String MODEL = MODEL_PATH + TEST_PATH;
-    private static final String ROADS = RES_PATH + MAP_OSM;
+    private static final String MODEL = MODEL_PATH + NEWTEST_PATH;
+    private static final String ROADS = RES_PATH + TEST_OSM;
 
     private boolean dcelVisible = false;
     private Model mainModel = null;

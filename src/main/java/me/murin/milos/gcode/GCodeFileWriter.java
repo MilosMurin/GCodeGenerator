@@ -1,4 +1,4 @@
-package me.murin.milos.utils;
+package me.murin.milos.gcode;
 
 import java.io.File;
 import java.io.FileWriter;

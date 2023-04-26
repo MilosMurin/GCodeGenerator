@@ -136,6 +136,7 @@ public class PointPairList extends ListWithModel {
         generator.addColorChange();
         generator.setFeedRate(3000);
         generator.setAbsolutePositioning();
+        generator.newLine();
 
         for (PointPair pointPair : lines) {
             if (!first) {
