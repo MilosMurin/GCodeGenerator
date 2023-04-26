@@ -1,6 +1,7 @@
 package me.murin.milos.listStuff;
 
 import me.murin.milos.dcel.Vertex;
+import me.murin.milos.gcode.GCodeGenerator;
 import me.murin.milos.geometry.PointPair;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.utils.Axis;
@@ -22,7 +23,7 @@ public class PointPairList extends ListWithModel {
 
     private OriginPosition originPosition = OriginPosition.CENTER;
 
-    private double toAdd = 0.02f;
+    private double toAdd = 0.2f;
 
     private double sizeX = 2;
     private double sizeZ = 2;
@@ -131,32 +132,65 @@ public class PointPairList extends ListWithModel {
         return lines.isEmpty();
     }
 
-    public String generateGCode() {
-        StringBuilder str = new StringBuilder();
-        for (PointPair pointPair : lines){
-            str.append(getGcodeFromPoint(pointPair.getStart())).append("\n");
+    public String generateGCode(Extremes extremes) {
+        GCodeGenerator generator = new GCodeGenerator();
+
+        boolean first = true;
+        String last = "";
+
+        // Color change
+        // M600
+        //  G1 E0.4 F1500 ; prime after color change
+        generator.addColorChange();
+        generator.setFeedRate(3000);
+        generator.setAbsolutePositioning();
+
+        for (PointPair pointPair : lines) {
+            if (!first) {
+                generator.addComment("Move to another starting road");
+                generator.addGcode(last);
+                generator.addGcode(getGcodeFromPointWithMaxY(pointPair.getStart(), extremes));
+                generator.addComment("END Move to another starting road");
+            } else {
+                generator.addGcode(getGcodeFromPointWithMaxY(pointPair.getStart(), extremes));
+                first = false;
+            }
+            generator.addGcode(getGcodeFromPoint(pointPair.getStart(), extremes));
             PointPair current = pointPair;
-            str.append(getGcodeFromPoint(current.getEnd()))
-                    .append(String.format(" E%f", current.getFilamentAmount())).append("\n");
+
+            generator.addGcodeWithE(getGcodeFromPoint(current.getEnd(), extremes), current.getFilamentAmount());
+            last = getGcodeFromPointWithMaxY(current.getEnd(), extremes);
+
             while (current.hasNext()) {
                 current = current.getNext();
-                str.append(getGcodeFromPoint(current.getEnd()))
-                        .append(String.format(" E%f", current.getFilamentAmount())).append("\n");
+                generator.addGcodeWithE(getGcodeFromPoint(current.getEnd(), extremes), current.getFilamentAmount());
+                last = getGcodeFromPointWithMaxY(current.getEnd(), extremes);
             }
-            // TODO: Add a move to another start (go up move to next start)
         }
-        return str.toString();
+        return generator.toString();
     }
 
-    public String getGcodeFromPoint(Vertex vertex) {
+    public String getGcodeFromPoint(Vertex vertex, Extremes extremes) {
         return String.format("G1 X%.3f Y%.3f Z%.3f",
-                (float) ((vertex.getZ() - extremes.getMin(Axis.Z)) * scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
-                (float) ((vertex.getX() - extremes.getMin(Axis.X)) * scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
-                vertex.getY());
+                (float) extremes.getMin(Axis.Z) + ((vertex.getZ() - this.extremes.getMin(Axis.Z)) *
+                        scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
+                (float) extremes.getMin(Axis.X) + ((vertex.getX() - this.extremes.getMin(Axis.X)) *
+                        scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
+                vertex.getY() + toAdd);
+    }
+
+    public String getGcodeFromPointWithMaxY(Vertex vertex, Extremes extremes) {
+        return String.format("G1 X%.3f Y%.3f Z%.3f",
+                (float) extremes.getMin(Axis.Z) + ((vertex.getZ() - this.extremes.getMin(Axis.Z)) *
+                        scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
+                (float) extremes.getMin(Axis.X) + ((vertex.getX() - this.extremes.getMin(Axis.X)) *
+                        scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
+                this.extremes.getMax(Axis.Y) + 1);
     }
 
 
     public enum OriginPosition {
+        // NOT FINISHED
         CENTER(-1, -1),
         TOP_RIGHT(1, 1), // MAX_MAX
         TOP_LEFT(-2, 0), // MAX_MIN

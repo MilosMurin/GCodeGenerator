@@ -1,5 +1,6 @@
 package me.murin.milos;
 
+import me.murin.milos.gcode.GCodeReader;
 import me.murin.milos.listStuff.RoadList;
 import me.murin.milos.render.Model;
 import me.murin.milos.render.Render;
@@ -15,7 +16,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.nfd.NFDFilterItem;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -40,8 +41,8 @@ public class Main implements AppLogic {
     private static final float MOVEMENT_SPEED = 0.01f;
 
 
-    private static final String MODEL = MODEL_PATH + NEWTEST_PATH;
-    private static final String ROADS = RES_PATH + TEST_OSM;
+    private static final String MODEL = MODEL_PATH + TEST_PATH;
+    private static final String ROADS = RES_PATH + MAP_OSM;
 
     private boolean dcelVisible = false;
     private Model mainModel = null;
@@ -50,6 +51,7 @@ public class Main implements AppLogic {
     private Model intersectModel = null;
     private RoadList roadList = null;
     private Intersectorator intersectorator;
+    private GCodeReader reader;
 
     public static void main(String[] args) {
 
@@ -69,6 +71,7 @@ public class Main implements AppLogic {
         window.getInputManager().track(GLFW_KEY_I);
         window.getInputManager().track(GLFW_KEY_F);
         window.getInputManager().track(GLFW_KEY_R);
+        window.getInputManager().track(GLFW_KEY_G);
 
         mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL, scene.getTextureCache());
         addModelAndEntity(scene, mainModel, "mainEntity", true);
@@ -166,6 +169,31 @@ public class Main implements AppLogic {
             }
         }
 
+        if (input.wasReleased(GLFW_KEY_G)) {
+            try (MemoryStack stack = stackPush()) {
+                NFDFilterItem.Buffer filters = NFDFilterItem.malloc(1);
+                filters.get(0)
+                        .name(stack.UTF8("Gcode files"))
+                        .spec(stack.UTF8("gcode"));
+
+
+                String path = loadPath(stack, filters);
+                if (path != null) {
+                    System.out.println(path);
+                    reader = new GCodeReader(path);
+                    try {
+                        reader.load();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    // TODO: add gcode auto where it needs to be
+                    // (; stop printing object untitled.stl id:0 copy 0
+                    //  ; WIPE_START )
+                    // medzi tymito dvoma komentarmi
+                }
+            }
+        }
+
         if (input.isKeyPressed(GLFW_KEY_W)) {
             camera.moveCloser(move);
         } else if (input.isKeyPressed(GLFW_KEY_S)) {
@@ -180,12 +208,13 @@ public class Main implements AppLogic {
             intersectModel = intersectorator.getResult().getModel();
             addModelAndEntity(scene, intersectModel, "intersectEntity", true);
             try {
-                String gcode = intersectorator.getResult().generateGCode();
+                String gcode = intersectorator.getResult().generateGCode(reader.getExtremes());
                 GCodeFileWriter writer = new GCodeFileWriter("out.gcode");
                 writer.write(gcode);
                 writer.close();
                 System.out.println(gcode);
-            } catch (IOException ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

@@ -41,7 +41,7 @@ public abstract class ListWithModel {
     }
 
     protected void testExtremes(Vertex vertex) {
-        extremes.testExtremes2D(vertex);
+        extremes.testExtremes(vertex);
     }
 
     protected double getMax(Axis axis) {
