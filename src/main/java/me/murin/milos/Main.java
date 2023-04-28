@@ -49,6 +49,7 @@ public class Main implements AppLogic {
     private static final String ROADS = RES_PATH + TEST_OSM;
 
     private boolean dcelVisible = false;
+    private boolean roadsVisible = true;
     private Model mainModel = null;
     private Model dcelModel = null;
     private Model roadModel = null;
@@ -76,6 +77,7 @@ public class Main implements AppLogic {
         window.getInputManager().track(GLFW_KEY_F);
         window.getInputManager().track(GLFW_KEY_R);
         window.getInputManager().track(GLFW_KEY_G);
+        window.getInputManager().track(GLFW_KEY_H);
 
         mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL, scene.getTextureCache());
         addModelAndEntity(scene, mainModel, "mainEntity", true);
@@ -115,7 +117,12 @@ public class Main implements AppLogic {
             mainModel.setVisible(!dcelVisible);
         }
 
-        if (input.wasReleased(GLFW_KEY_F)) {
+        if (input.wasReleased(GLFW_KEY_H)) {
+            roadsVisible = !roadsVisible;
+            roadModel.setVisible(roadsVisible);
+        }
+
+        if (input.wasReleased(GLFW_KEY_F)) { // load object
             try (MemoryStack stack = stackPush()) {
                 NFDFilterItem.Buffer filters = NFDFilterItem.malloc(1);
                 filters.get(0)
@@ -147,7 +154,7 @@ public class Main implements AppLogic {
             }
         }
 
-        if (input.wasReleased(GLFW_KEY_R)) {
+        if (input.wasReleased(GLFW_KEY_R)) { // load linear objects
             try (MemoryStack stack = stackPush()) {
                 NFDFilterItem.Buffer filters = NFDFilterItem.malloc(1);
                 filters.get(0)
@@ -173,7 +180,7 @@ public class Main implements AppLogic {
             }
         }
 
-        if (input.wasReleased(GLFW_KEY_G)) {
+        if (input.wasReleased(GLFW_KEY_G)) { // import gcode
             try (MemoryStack stack = stackPush()) {
                 NFDFilterItem.Buffer filters = NFDFilterItem.malloc(1);
                 filters.get(0)
@@ -200,14 +207,14 @@ public class Main implements AppLogic {
             camera.moveFurther(move);
         }
 
-        if (input.wasReleased(GLFW_KEY_I)) {
+        if (input.wasReleased(GLFW_KEY_I)) { // intersect button
+            if (intersectModel != null) {
+                intersectModel.cleanup();
+            }
+            intersectorator.intersect();
+            intersectModel = intersectorator.getResult().getModel();
+            addModelAndEntity(scene, intersectModel, "intersectEntity", true);
             if (reader != null) {
-                if (intersectModel != null) {
-                    intersectModel.cleanup();
-                }
-                intersectorator.intersect();
-                intersectModel = intersectorator.getResult().getModel();
-                addModelAndEntity(scene, intersectModel, "intersectEntity", true);
                 try {
                     String gcode = intersectorator.getResult().generateGCode(reader.getExtremes());
                     GCodeFileWriter writer = new GCodeFileWriter("out.gcode");
