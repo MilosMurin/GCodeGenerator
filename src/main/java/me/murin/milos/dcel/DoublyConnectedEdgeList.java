@@ -44,7 +44,7 @@ public class DoublyConnectedEdgeList {
      * @param end    the end of the main edge (the origin of the twin edge to search)
      * @return twin edge if such edge exists, null if nothing found
      */
-    public Edge getTwin(Vertex origin, Vertex end) {
+    public Edge findTwin(Vertex origin, Vertex end) {
         for (Edge e : edges) {
             if (e.isTwin(origin, end)) {
                 return e;
@@ -58,9 +58,9 @@ public class DoublyConnectedEdgeList {
         this.faces.add(face);
     }
 
-    public Face getFaceForPoint(double x, double z) {
+    public Face getFaceForPoint(Vertex vertex) {
         for (Face f : faces) {
-            if (f.isPointInFace(x, z)) {
+            if (f.isPointInFace(vertex)) {
                 return f;
             }
         }

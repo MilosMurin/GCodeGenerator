@@ -23,7 +23,7 @@ public class PointPairList extends ListWithModel {
 
     private OriginPosition originPosition = OriginPosition.CENTER;
 
-    private double displayToAdd = 0.02f;
+    private double displayToAdd = 0.1f;
     private double layerHeight = 0.2f;
 
     private double sizeX = 2;
@@ -116,7 +116,7 @@ public class PointPairList extends ListWithModel {
 
     @Override
     protected Vector4f getDiffuseColor() {
-        return new Vector4f(0.0f, 1.0f, 0.0f, 1.0f); // GREEN
+        return new Vector4f(0.0f, 0.0f, 1.0f, 1.0f); // BLUE
     }
 
 
@@ -134,7 +134,7 @@ public class PointPairList extends ListWithModel {
         // M600
         //  G1 E0.4 F1500 ; prime after color change
         generator.addColorChange();
-        generator.setFeedRate(3000);
+        generator.setFeedRate(1000);
         generator.setAbsolutePositioning();
         generator.newLine();
 

@@ -1,6 +1,7 @@
 package me.murin.milos.dcel;
 
 import me.murin.milos.geometry.Line;
+import me.murin.milos.geometry.Plane;
 import me.murin.milos.geometry.PointPair;
 
 public class Face {
@@ -8,11 +9,7 @@ public class Face {
     private final int id;
     private Edge firstEdge;
 
-    private double a;
-    private double b;
-    private double c;
-    private double d;
-
+    private Plane plane = null;
 
     public Face(int id) {
         this.id = id;
@@ -42,28 +39,14 @@ public class Face {
         second.setGreater(second.testVertex(p1) > 0);
         third.setGreater(third.testVertex(p2) > 0);
 
-        double a1 = p2.getX() - p1.getX();
-        double a2 = p2.getY() - p1.getY();
-        double a3 = p2.getZ() - p1.getZ();
-        double b1 = p3.getX() - p1.getX();
-        double b2 = p3.getY() - p1.getY();
-        double b3 = p3.getZ() - p1.getZ();
-
-        this.a = a2 * b3 - a3 * b2;
-        this.b = a3 * b1 - a1 * b3;
-        this.c = a1 * b2 - a2 * b1;
-        this.d = -(this.a * p1.getX() + this.b * p1.getY() + this.c * p1.getZ());
+        this.plane = new Plane(p1, p2, p3);
     }
 
     public boolean isPointInFace(Vertex vertex) {
-        return isPointInFace(vertex.getX(), vertex.getZ());
-    }
-
-    public boolean isPointInFace(double x, double z) {
         boolean isIn = true;
         Edge current = firstEdge;
         while (isIn) {
-            isIn = current.isInHalfPlane(x, z);
+            isIn = current.isInHalfPlane(vertex);
             current = current.getNextEdge();
             if (current == firstEdge) {
                 break;
@@ -72,21 +55,12 @@ public class Face {
         return isIn;
     }
 
-    public Line intersection(PointPair other) {
-        return new Line(intersect(other.getStart()), intersect(other.getEnd()));
-    }
-
-    public Vertex intersect(Vertex vertex) {
-        if (b == 0) {
-            return null;
-        } else {
-            double num = (a * vertex.getX() + b + c * vertex.getZ() + d) / b;
-            return new Vertex(vertex.getX(), 1 - num, vertex.getZ());
-        }
+    public Line project(PointPair other) {
+        return this.plane.project(other);
     }
 
     @Override
     public String toString() {
-        return String.format("%.4f*x + %.4f*y + %.4f*z + %.4f = 0\n", a, b, c, d);
+        return this.plane.toString();
     }
 }

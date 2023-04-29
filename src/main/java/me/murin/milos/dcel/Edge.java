@@ -1,5 +1,6 @@
 package me.murin.milos.dcel;
 
+import me.murin.milos.geometry.HalfPlane;
 import me.murin.milos.geometry.Line;
 
 public class Edge {
@@ -11,14 +12,8 @@ public class Edge {
     private Face incidentFace;
     private Edge nextEdge;
 
-    private double a;
-    private double b;
-    private double c;
-
     private Line line;
-
-    private boolean greater;
-    private boolean greaterSet = false;
+    private HalfPlane halfPlane;
 
     public Edge(int id, int edgeId, Vertex origin, Face incidentFace) {
         this.id = id;
@@ -86,42 +81,28 @@ public class Edge {
         Vertex nextOrigin = nextEdge.getOrigin();
 
         // for analytical geometry
-        this.a = nextOrigin.getZ() - this.origin.getZ();
-        this.b = -(nextOrigin.getX() - this.origin.getX());
-        this.c = -(this.a * this.origin.getX() + this.b * this.origin.getZ());
+        double a = nextOrigin.getZ() - this.origin.getZ();
+        double b = -(nextOrigin.getX() - this.origin.getX());
+        double c = -(a * this.origin.getX() + b * this.origin.getZ());
+        this.halfPlane = new HalfPlane(a, b, c);
 
-
-        line = new Line(this.origin.getX(), this.origin.getY(), this.origin.getZ(), (nextOrigin.getX() - this.origin.getX()),
+        line = new Line(this.origin.getX(), this.origin.getY(), this.origin.getZ(),
+                (nextOrigin.getX() - this.origin.getX()),
                 (nextOrigin.getY() - this.origin.getY()), (nextOrigin.getZ() - this.origin.getZ()));
         line.setStartPoint(this.origin);
         line.setEndPoint(nextOrigin);
     }
 
     public double testVertex(Vertex v) {
-        return this.testPoint(v.getX(), v.getZ());
-    }
-
-    public double testPoint(double x, double z) {
-        double v = a * x + b * z + c;
-//        System.out.printf("Testing point(%f, %f) in plane (%f, %f, %f) %s %f\n", x, z, a, b, c, greater ? ">" : "<", v);
-        return v;
+        return this.halfPlane.testPoint(v);
     }
 
     public void setGreater(boolean greater) {
-        this.greater = greater;
-        this.greaterSet = true;
+        this.halfPlane.setGreater(greater);
     }
 
-    public boolean isInHalfPlane(double x, double z) {
-        // if i will not want to take the edges change this to be a sharp inequality
-        if (greaterSet) {
-            if (greater) {
-                return testPoint(x, z) >= 0;
-            } else {
-                return testPoint(x, z) <= 0;
-            }
-        }
-        return false;
+    public boolean isInHalfPlane(Vertex vertex) {
+        return this.halfPlane.isInHalfPlane(vertex);
     }
 
     public Vertex intersect(Line line) {

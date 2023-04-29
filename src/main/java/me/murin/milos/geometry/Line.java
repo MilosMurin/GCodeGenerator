@@ -9,25 +9,25 @@ import me.murin.milos.utils.Utils;
  */
 public class Line {
 
-    private final double x;
-    private final double y;
-    private final double z;
-    private final double a;
-    private final double b;
-    private final double c;
+    private final double x0;
+    private final double y0;
+    private final double z0;
+    private final double ux;
+    private final double uy;
+    private final double uz;
 
     private double tStart = Double.MAX_VALUE;
     private double tEnd = Double.MIN_VALUE;
 
 
     public Line(double pointX, double pointY, double pointZ, double vectorX, double vectorY, double vectorZ) {
-        this.x = pointX;
-        this.y = pointY;
-        this.z = pointZ;
-        this.a = vectorX;
-        this.b = vectorY;
-        this.c = vectorZ;
-        if (this.a == 0 && this.b == 0 && this.c == 0) {
+        this.x0 = pointX;
+        this.y0 = pointY;
+        this.z0 = pointZ;
+        this.ux = vectorX;
+        this.uy = vectorY;
+        this.uz = vectorZ;
+        if (this.ux == 0 && this.uy == 0 && this.uz == 0) {
             throw new IllegalArgumentException("You've created a point and not a line!");
         }
     }
@@ -40,12 +40,12 @@ public class Line {
 
     public double getT(Vertex vertex) {
 
-        double t = a != 0 ? getTForX(vertex.getX()) : b != 0 ? getTForY(vertex.getY()) : c != 0 ?
+        double t = ux != 0 ? getTForX(vertex.getX()) : uy != 0 ? getTForY(vertex.getY()) : uz != 0 ?
                 getTForZ(vertex.getZ()) : 0;
         if (isVertexInLine(vertex, t)) {
             return t;
         } else {
-            System.out.printf("Line:\nx=%f+%ft\ny=%f+%ft\nz=%f+%ft\n", x, a, y, b, z, c);
+            System.out.printf("Line:\nx=%f+%ft\ny=%f+%ft\nz=%f+%ft\n", x0, ux, y0, uy, z0, uz);
             System.out.printf("Point: (%f, %f, %f)\n", vertex.getX(), vertex.getY(), vertex.getZ());
             System.out.printf("t: %f\n", t);
             throw new IllegalArgumentException("Cannot set bounds with vertices that dont belong to the line!");
@@ -53,8 +53,8 @@ public class Line {
     }
 
     public boolean isVertexInLine(Vertex v, double t) {
-        return Utils.isAlmostEqual(v.getX(), x + a * t) && Utils.isAlmostEqual(v.getY(), y + b * t) &&
-                Utils.isAlmostEqual(v.getZ(), z + c * t);
+        return Utils.isAlmostEqual(v.getX(), x0 + ux * t) && Utils.isAlmostEqual(v.getY(), y0 + uy * t) &&
+                Utils.isAlmostEqual(v.getZ(), z0 + uz * t);
     }
 
     public boolean isVertexInLine(Vertex v) {
@@ -67,20 +67,20 @@ public class Line {
     }
 
     private double getTForX(double x) {
-        return (x - this.x) / a;
+        return (x - this.x0) / ux;
     }
 
     private double getTForY(double y) {
-        return (y - this.y) / b;
+        return (y - this.y0) / uy;
     }
 
     private double getTForZ(double z) {
-        return (z - this.z) / c;
+        return (z - this.z0) / uz;
     }
 
     public Vertex getPoint(double t) {
         if ((t >= tStart && t <= tEnd) || (t <= tStart && t >= tEnd)) {
-            return new Vertex(x + a * t, y + b * t, z + c * t);
+            return new Vertex(x0 + ux * t, y0 + uy * t, z0 + uz * t);
         } else {
             return null;
 //            throw new IllegalArgumentException("Parameter \"t\" is out of bounds of this line");
@@ -101,7 +101,7 @@ public class Line {
         double xt = getTForX(x);
         double zt = getTForZ(z);
         if (!Utils.isAlmostEqual(xt, zt)) {
-            System.out.printf("Line x=%f+%ft; y=%f+%ft; z=%f+%ft\n", this.x, a, y, b, this.z, c);
+            System.out.printf("Line x=%f+%ft; y=%f+%ft; z=%f+%ft\n", this.x0, ux, y0, uy, this.z0, uz);
             System.out.printf("Point x=%f; z=%f\n", x, z);
             System.out.printf("t x=%f; z=%f\n", xt, zt);
             throw new IllegalArgumentException("Vertex cannot be set on the line!");
@@ -153,32 +153,32 @@ public class Line {
         }
     }
 
-    public double getX() {
-        return x;
+    public double getX0() {
+        return x0;
     }
 
-    public double getY() {
-        return y;
+    public double getY0() {
+        return y0;
     }
 
-    public double getZ() {
-        return z;
+    public double getZ0() {
+        return z0;
     }
 
-    public double getA() {
-        return a;
+    public double getUx() {
+        return ux;
     }
 
-    public double getB() {
-        return b;
+    public double getUy() {
+        return uy;
     }
 
-    public double getC() {
-        return c;
+    public double getUz() {
+        return uz;
     }
 
     @Override
     public String toString() {
-        return String.format("x=%.4f + %.4f*t\ny=%.4f + %.4f*t\nz=%.4f + %.4f*t\n", x, a, y, b, z, c);
+        return String.format("x=%.4f + %.4f*t\ny=%.4f + %.4f*t\nz=%.4f + %.4f*t\n", x0, ux, y0, uy, z0, uz);
     }
 }

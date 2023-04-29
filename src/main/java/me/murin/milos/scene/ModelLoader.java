@@ -10,7 +10,13 @@ import me.murin.milos.render.Model;
 import me.murin.milos.render.TextureCache;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.*;
+import org.lwjgl.assimp.AIColor4D;
+import org.lwjgl.assimp.AIFace;
+import org.lwjgl.assimp.AIMaterial;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.AIString;
+import org.lwjgl.assimp.AIVector3D;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.File;
@@ -18,7 +24,20 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.assimp.Assimp.*;
+import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_DIFFUSE;
+import static org.lwjgl.assimp.Assimp.aiGetMaterialColor;
+import static org.lwjgl.assimp.Assimp.aiGetMaterialTexture;
+import static org.lwjgl.assimp.Assimp.aiImportFile;
+import static org.lwjgl.assimp.Assimp.aiProcess_CalcTangentSpace;
+import static org.lwjgl.assimp.Assimp.aiProcess_FixInfacingNormals;
+import static org.lwjgl.assimp.Assimp.aiProcess_GenSmoothNormals;
+import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
+import static org.lwjgl.assimp.Assimp.aiProcess_LimitBoneWeights;
+import static org.lwjgl.assimp.Assimp.aiProcess_PreTransformVertices;
+import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
+import static org.lwjgl.assimp.Assimp.aiReturn_SUCCESS;
+import static org.lwjgl.assimp.Assimp.aiTextureType_DIFFUSE;
+import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
 
 public class ModelLoader {
 
@@ -189,7 +208,7 @@ public class ModelLoader {
                     Edge twin = null;
 
                     if (prev != null) {
-                        twin = dcel1.getTwin(prev.getOrigin(), vertex);
+                        twin = dcel1.findTwin(prev.getOrigin(), vertex);
                         if (twin != null) {
                             prev.updateIdWithTwin(twin);
                         }
@@ -212,7 +231,7 @@ public class ModelLoader {
                 // link first and last(current)
                 // update id of first if it has a twin
                 if (current != null) {
-                    Edge twin = dcel1.getTwin(current.getOrigin(), first.getOrigin());
+                    Edge twin = dcel1.findTwin(current.getOrigin(), first.getOrigin());
                     if (twin != null) {
                         current.updateIdWithTwin(twin);
                     }

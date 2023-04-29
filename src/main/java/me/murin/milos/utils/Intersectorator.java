@@ -55,7 +55,7 @@ public class Intersectorator {
             // note: make also a list of vertices (that remember the lines going out of them and into them) for the
             // traveling salesman problem
 
-            Face face = dcel.getFaceForPoint(start.getStart().getX(), start.getStart().getZ());
+            Face face = dcel.getFaceForPoint(start.getStart());
             if (face == null) {
                 System.out.printf("Point (%f, %f) didnt find a face\n", start.getStart().getX(),
                         start.getStart().getZ());
@@ -67,7 +67,7 @@ public class Intersectorator {
             Edge intersect;
             Line lineIntersection;
             while (road != null) { // will not work if the last road goes through more faces
-                lineIntersection = face.intersection(road);
+                lineIntersection = face.project(road);
                 if (endPoint == null) { // if this is the first road set the starting point as the start of the road
                     startPoint = lineIntersection.getPointOnLine(road.getStart());
                     result.addVertex(startPoint);

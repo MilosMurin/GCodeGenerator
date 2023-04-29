@@ -28,15 +28,15 @@ public class MyMatrix {
 
 
     public MyMatrix(Line line1, Line line2) {
-        matrix[0][0] = line1.getA();
-        matrix[0][1] = -line2.getA();
-        matrix[1][0] = line1.getB();
-        matrix[1][1] = -line2.getB();
-        matrix[2][0] = line1.getC();
-        matrix[2][1] = -line2.getC();
-        result[0] = line2.getX() - line1.getX();
-        result[1] = line2.getY() - line1.getY();
-        result[2] = line2.getZ() - line1.getZ();
+        matrix[0][0] = line1.getUx();
+        matrix[0][1] = -line2.getUx();
+        matrix[1][0] = line1.getUy();
+        matrix[1][1] = -line2.getUy();
+        matrix[2][0] = line1.getUz();
+        matrix[2][1] = -line2.getUz();
+        result[0] = line2.getX0() - line1.getX0();
+        result[1] = line2.getY0() - line1.getY0();
+        result[2] = line2.getZ0() - line1.getZ0();
     }
 
 
