@@ -66,6 +66,7 @@ public class Model {
             material.getMeshList().add(dcl.getMesh());
             extremes.testExtremes(dcl.getExtremes());
         }
+//        material.setDiffuseColor(new Vector4f(1f, 1f, 1f, 1f));
 
         materials.add(material);
         dcelModel = new Model(id + "Dcel", materials);

@@ -66,7 +66,7 @@ public class Line {
         }
     }
 
-    private double getTForX(double x) {
+    private double getTForX(double x) { // TODO: div by zeros are possible here
         return (x - this.x0) / ux;
     }
 

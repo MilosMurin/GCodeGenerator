@@ -18,11 +18,27 @@ public class RoadList extends ListWithModel {
 
     private final ArrayList<Vertex> vertices = new ArrayList<>();
 
+    private PointPair previous = null;
+
     public void addVertex(Vertex vertex) {
         vertices.add(vertex);
         vertex.setId(extVertexId++);
         testExtremes(vertex);
         invalidateModel();
+    }
+
+    public void addRoad(int sId, int eId) {
+        PointPair pp = new PointPair(vertices.get(sId), vertices.get(eId));
+        if (previous != null) {
+            previous.setNext(pp);
+        } else {
+            starts.add(pp);
+            previous = pp;
+        }
+    }
+
+    public void clearPrevious() {
+        previous = null;
     }
 
     public PointPair addRoad(int sId, int eId, PointPair prev) {

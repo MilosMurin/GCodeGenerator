@@ -7,7 +7,13 @@ import me.murin.milos.scene.Scene;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL30.GL_FRAGMENT_SHADER;
+import static org.lwjgl.opengl.GL30.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL30.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL30.GL_VERTEX_SHADER;
+import static org.lwjgl.opengl.GL30.glActiveTexture;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glDrawElements;
 
 public class SceneRender {
 
@@ -19,9 +25,14 @@ public class SceneRender {
 
     public SceneRender() {
         List<ShaderModuleData> shaderModuleDataList = new ArrayList<>();
+//        String start = "/"; // for jar
+        String frag = getClass().getResource("/scene.frag").getPath().substring(6);
+        String vert = getClass().getResource("/scene.vert").getFile().substring(6);
+        System.out.println(frag);
+
         String start = "src/main/resources/shaders/";
-        shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(start + "scene.vert", GL_VERTEX_SHADER));
-        shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(start + "scene.frag", GL_FRAGMENT_SHADER));
+        shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(vert, GL_VERTEX_SHADER));
+        shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(frag, GL_FRAGMENT_SHADER));
         shaderProgram = new ShaderProgram(shaderModuleDataList);
 
         cerateUniforms();

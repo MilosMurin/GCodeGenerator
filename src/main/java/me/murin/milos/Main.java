@@ -23,20 +23,29 @@ import org.lwjgl.util.nfd.NFDFilterItem;
 import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_G;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_H;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_I;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.util.nfd.NativeFileDialog.*;
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_FreePath;
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OKAY;
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OpenDialog;
 
 public class Main implements AppLogic {
 
     private static final String RES_PATH = "src/main/resources/";
     private static final String MODEL_PATH = RES_PATH + "models/";
     private static final String CUBE_PATH = "cube/cube.obj";
-    private static final String TEST_PATH = "test/test.obj";
+    private static final String TEST_PATH = "test/malyZlozity.obj";
     private static final String TESTFULL_PATH = "test/testFull.obj";
     private static final String TESTSMALL_PATH = "test/testSmall.obj";
     private static final String TESTMINI_PATH = "test/testMini.obj";
-    private static final String NEWTEST_PATH = "newTest/testTest.obj";
+    private static final String NEWTEST_PATH = "newTest/velkyJednoduchy.obj";
 
     private static final String MAP_OSM = "osm/map.osm";
     private static final String TEST_OSM = "osm/test.osm";
@@ -45,7 +54,7 @@ public class Main implements AppLogic {
     private static final float MOVEMENT_SPEED = 0.01f;
 
 
-    private static final String MODEL = MODEL_PATH + NEWTEST_PATH;
+    private static final String MODEL = MODEL_PATH + TEST_PATH;
     private static final String ROADS = RES_PATH + TEST_OSM;
 
     private boolean dcelVisible = false;
@@ -212,6 +221,7 @@ public class Main implements AppLogic {
                 intersectModel.cleanup();
             }
             intersectorator.intersect();
+            intersectorator.getResult().createModel();
             intersectModel = intersectorator.getResult().getModel();
             addModelAndEntity(scene, intersectModel, "intersectEntity", true);
             if (reader != null) {
@@ -244,7 +254,7 @@ public class Main implements AppLogic {
 
     public void refreshRoadModel(Scene scene) {
         roadList.adjustToModel((float) mainModel.getExtremes().getSize(Axis.X),
-                (float) mainModel.getExtremes().getSize(Axis.Z), mainModel.getExtremes().getMax(Axis.Y) * 1.2);
+                (float) mainModel.getExtremes().getSize(Axis.Z), mainModel.getExtremes().getMax(Axis.Y) * 1.5);
         if (roadModel != null) {
             roadModel.cleanup();
         }

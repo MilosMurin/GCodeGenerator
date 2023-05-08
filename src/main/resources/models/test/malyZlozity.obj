@@ -1,6 +1,6 @@
 # Blender v2.83.4 OBJ File: 'firstplane.blend'
 # www.blender.org
-mtllib test.mtl
+mtllib malyZlozity.mtl
 o Plane
 v -1.000000 0.196078 1.000000
 v 1.000000 0.360784 1.000000

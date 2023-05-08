@@ -23,7 +23,7 @@ public class PointPairList extends ListWithModel {
 
     private OriginPosition originPosition = OriginPosition.CENTER;
 
-    private double displayToAdd = 0.1f;
+    private double displayToAdd = 0.5f;
     private double layerHeight = 0.2f;
 
     private double sizeX = 2;
