@@ -38,24 +38,22 @@ import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OpenDialog;
 
 public class Main implements AppLogic {
 
-    private static final String RES_PATH = "src/main/resources/";
-    private static final String MODEL_PATH = RES_PATH + "models/";
-    private static final String CUBE_PATH = "cube/cube.obj";
-    private static final String TEST_PATH = "test/malyZlozity.obj";
-    private static final String TESTFULL_PATH = "test/testFull.obj";
-    private static final String TESTSMALL_PATH = "test/testSmall.obj";
-    private static final String TESTMINI_PATH = "test/testMini.obj";
-    private static final String NEWTEST_PATH = "newTest/velkyJednoduchy.obj";
+    private static final String CUBE_PATH = "/cube/cube.obj";
+    private static final String TEST_PATH = "/test/malyZlozity.obj";
+    private static final String TESTFULL_PATH = "/test/testFull.obj";
+    private static final String TESTSMALL_PATH = "/test/testSmall.obj";
+    private static final String TESTMINI_PATH = "/test/testMini.obj";
+    private static final String NEWTEST_PATH = "/newTest/velkyJednoduchy.obj";
 
-    private static final String MAP_OSM = "osm/map.osm";
-    private static final String TEST_OSM = "osm/test.osm";
+    private static final String MAP_OSM = "/jednoducheCiary.osm";
+    private static final String TEST_OSM = "/zloziteCiary.osm";
 
     private static final float MOUSE_SENSITIVITY = 0.3f;
     private static final float MOVEMENT_SPEED = 0.01f;
 
 
-    private static final String MODEL = MODEL_PATH + TEST_PATH;
-    private static final String ROADS = RES_PATH + TEST_OSM;
+    private static final String MODEL = TEST_PATH;
+    private static final String ROADS = TEST_OSM;
 
     private boolean dcelVisible = false;
     private boolean roadsVisible = true;
@@ -88,7 +86,7 @@ public class Main implements AppLogic {
         window.getInputManager().track(GLFW_KEY_G);
         window.getInputManager().track(GLFW_KEY_H);
 
-        mainModel = ModelLoader.loadModelWithDcel("mainModel", MODEL, scene.getTextureCache());
+        mainModel = ModelLoader.loadModelWithDcel("mainModel", TEST_PATH, scene.getTextureCache());
         addModelAndEntity(scene, mainModel, "mainEntity", true);
 
         dcelModel = mainModel.getDcelModel();
@@ -173,7 +171,7 @@ public class Main implements AppLogic {
 
                 String path = loadPath(stack, filters);
                 if (path != null) {
-                    if (path.endsWith("osm")) {
+                    if (path.endsWith("roads")) {
                         RoadOsmLoader rl = new RoadOsmLoader(path);
                         roadList = rl.getRoadList();
                     } else if (path.endsWith("obj")) {

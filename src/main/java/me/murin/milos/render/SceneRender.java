@@ -3,6 +3,8 @@ package me.murin.milos.render;
 
 import me.murin.milos.render.ShaderProgram.ShaderModuleData;
 import me.murin.milos.scene.Scene;
+import me.murin.milos.utils.MyFile;
+import me.murin.milos.utils.MyFile.ResourceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +27,10 @@ public class SceneRender {
 
     public SceneRender() {
         List<ShaderModuleData> shaderModuleDataList = new ArrayList<>();
-//        String start = "/"; // for jar
-        String frag = getClass().getResource("/scene.frag").getPath().substring(6);
-        String vert = getClass().getResource("/scene.vert").getFile().substring(6);
-        System.out.println(frag);
 
-        String start = "src/main/resources/shaders/";
+        MyFile vert = new MyFile("/scene.vert", ResourceType.SHADER);
+        MyFile frag = new MyFile("/scene.frag", ResourceType.SHADER);
+
         shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(vert, GL_VERTEX_SHADER));
         shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(frag, GL_FRAGMENT_SHADER));
         shaderProgram = new ShaderProgram(shaderModuleDataList);

@@ -14,7 +14,7 @@ public class RoadObjLoader extends RoadImporter {
     @Override
     public void load() {
         try {
-            Scanner sc = new Scanner(file);
+            Scanner sc = new Scanner(file.getFile());
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 String[] split = line.split(" ");

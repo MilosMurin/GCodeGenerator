@@ -1,16 +1,16 @@
 package me.murin.milos.roads;
 
 import me.murin.milos.listStuff.RoadList;
-
-import java.io.File;
+import me.murin.milos.utils.MyFile;
+import me.murin.milos.utils.MyFile.ResourceType;
 
 public abstract class RoadImporter {
 
     protected final RoadList roadList = new RoadList();
-    protected final File file;
+    protected final MyFile file;
 
     public RoadImporter(String path) {
-        file = new File(path);
+        file = new MyFile(path, ResourceType.ROAD);
         this.load();
     }
 

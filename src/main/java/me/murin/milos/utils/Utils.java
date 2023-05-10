@@ -5,9 +5,6 @@ import info.pavie.basicosmparser.model.Way;
 import me.murin.milos.dcel.Vertex;
 import me.murin.milos.geometry.PointPair;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,16 +13,6 @@ public class Utils {
 
     private Utils() {
         // Utility class
-    }
-
-    public static String readFile(String filePath) {
-        String str;
-        try {
-            str = new String(Files.readAllBytes(Paths.get(filePath)));
-        } catch (IOException excp) {
-            throw new RuntimeException("Error reading file [" + filePath + "]", excp);
-        }
-        return str;
     }
 
 

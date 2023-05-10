@@ -25,7 +25,7 @@ public class RoadOsmLoader extends RoadImporter {
         OSMParser p = new OSMParser();
 
         try {
-            Map<String, Element> result = p.parse(file);
+            Map<String, Element> result = p.parse(file.getFile());
             for (String key : result.keySet()) {
                 Way way = isWay(result.get(key));
                 if (way != null) {

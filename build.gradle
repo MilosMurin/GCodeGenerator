@@ -60,9 +60,4 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-
-    from('src/main/resources/shaders') {
-        include 'scene.vert'
-        include 'scene.frag'
-    }
 }

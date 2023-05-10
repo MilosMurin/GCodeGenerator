@@ -1,6 +1,6 @@
 package me.murin.milos.render;
 
-import me.murin.milos.utils.Utils;
+import me.murin.milos.utils.MyFile;
 import org.lwjgl.opengl.GL30;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class ShaderProgram {
         }
 
         List<Integer> shaderModules = new ArrayList<>();
-        shaderModuleDataList.forEach(s -> shaderModules.add(createShader(Utils.readFile(s.shaderFile), s.shaderType)));
+        shaderModuleDataList.forEach(s -> shaderModules.add(createShader(s.shaderFile.readFile(), s.shaderType)));
 
 
         link(shaderModules);
@@ -94,7 +94,7 @@ public class ShaderProgram {
     }
 
 
-    public record ShaderModuleData(String shaderFile, int shaderType) {
+    public record ShaderModuleData(MyFile shaderFile, int shaderType) {
 
     }
 }

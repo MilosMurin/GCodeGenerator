@@ -8,6 +8,8 @@ import me.murin.milos.render.Material;
 import me.murin.milos.render.Mesh;
 import me.murin.milos.render.Model;
 import me.murin.milos.render.TextureCache;
+import me.murin.milos.utils.MyFile;
+import me.murin.milos.utils.MyFile.ResourceType;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIColor4D;
@@ -63,15 +65,16 @@ public class ModelLoader {
     }
 
     public static Model loadModel(String modelId, String modelPath, TextureCache textureCache, int flags) {
-        File file = new File(modelPath);
+        MyFile file = new MyFile(modelPath, ResourceType.MODEL);
+//        File file = Utils.getFileFirstResource("/models" + modelPath);
         if (!file.exists()) {
-            throw new RuntimeException("Model path does not exist [" + modelPath + "]");
+            throw new RuntimeException("Model path does not exist [" + file.getPath() + "]");
         }
         String dir = file.getParent();
 
-        AIScene aiScene = aiImportFile(modelPath, flags);
+        AIScene aiScene = aiImportFile(file.getPath(), flags);
         if (aiScene == null) {
-            throw new RuntimeException("Error loading model [modelPath: " + modelPath + "]");
+            throw new RuntimeException("Error loading model [modelPath: " + file.getPath() + "]");
         }
 
         int numMaterials = aiScene.mNumMaterials();
@@ -188,7 +191,6 @@ public class ModelLoader {
         List<Integer> indices = new ArrayList<>();
         int numFaces = aiMesh.mNumFaces();
         AIFace.Buffer faces = aiMesh.mFaces();
-
 
         int edgeId = 0;
         for (int i = 0; i < numFaces; i++) {
