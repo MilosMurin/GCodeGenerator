@@ -5,7 +5,7 @@ import org.joml.Vector3d;
 
 public class PointPair {
 
-    public static final double FIL_FOR_CM = 0.031354;
+    public static final double FIL_FOR_CM = 0.032;
 
     private Vertex start;
     private Vertex end;

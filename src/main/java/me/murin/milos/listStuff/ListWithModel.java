@@ -40,8 +40,12 @@ public abstract class ListWithModel {
         this.validateModel();
     }
 
-    protected void testExtremes(Vertex vertex) {
+    public void testExtremes(Vertex vertex) {
         extremes.testExtremes(vertex);
+    }
+
+    protected void clearExtremes() {
+        extremes.clear();
     }
 
     protected double getMax(Axis axis) {

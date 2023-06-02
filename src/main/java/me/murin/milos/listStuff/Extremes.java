@@ -36,6 +36,15 @@ public class Extremes {
         }
     }
 
+    public void clear() {
+        for (int i = 0; i < 3; i++) {
+            minimums[i] = Double.MAX_VALUE;
+        }
+        for (int i = 0; i < 3; i++) {
+            maximums[i] = Double.MIN_VALUE;
+        }
+    }
+
     public double getMax(Axis axis) {
         return maximums[axis.getId()];
     }

@@ -23,8 +23,8 @@ public class PointPairList extends ListWithModel {
 
     private OriginPosition originPosition = OriginPosition.CENTER;
 
-    private double displayToAdd = 0.5f;
-    private double layerHeight = 0.2f;
+    private double displayToAdd = 0.2f;
+    private double layerHeight = 0.3f;
 
     private double sizeX = 2;
     private double sizeZ = 2;
@@ -97,11 +97,14 @@ public class PointPairList extends ListWithModel {
         float[] vertexBuffer = new float[vertices.size() * 3];
         for (Vertex v : vertices) {
             int id = v.getId();
-            vertexBuffer[3 * id] =
-                    (float) ((v.getX() - extremes.getMin(Axis.X)) * scaleX + originPosition.multiplyX * diffX);
+//            vertexBuffer[3 * id] =
+//                    (float) ((v.getX() - extremes.getMin(Axis.X)) * scaleX + originPosition.multiplyX * diffX);
+//            vertexBuffer[3 * id + 1] = (float) (v.getY() + displayToAdd);
+//            vertexBuffer[3 * id + 2] =
+//                    (float) ((v.getZ() - extremes.getMin(Axis.Z)) * scaleZ + originPosition.multiplyZ * diffZ);
+            vertexBuffer[3 * id] = (float) v.getX();
             vertexBuffer[3 * id + 1] = (float) (v.getY() + displayToAdd);
-            vertexBuffer[3 * id + 2] =
-                    (float) ((v.getZ() - extremes.getMin(Axis.Z)) * scaleZ + originPosition.multiplyZ * diffZ);
+            vertexBuffer[3 * id + 2] = (float) v.getZ();
         }
 
         // indices
@@ -175,10 +178,16 @@ public class PointPairList extends ListWithModel {
     public String getGcodeFromPointWithMaxY(Vertex vertex, Extremes extremes) {
         return String.format("G1 X%.3f Y%.3f Z%.3f",
                 (float) (extremes == null ? 0 : extremes.getMin(Axis.Z)) +
-                        ((vertex.getZ() - this.extremes.getMin(Axis.Z)) * scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
+                        ((vertex.getZ() - this.extremes.getMin(
+                                Axis.Z)) * scaleZ + OriginPosition.BOTTOM_LEFT.multiplyZ * diffZ),
                 (float) (extremes == null ? 0 : extremes.getMin(Axis.X)) +
-                        ((vertex.getX() - this.extremes.getMin(Axis.X)) * scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
+                        ((vertex.getX() - this.extremes.getMin(
+                                Axis.X)) * scaleX + OriginPosition.BOTTOM_LEFT.multiplyX * diffX),
                 this.extremes.getMax(Axis.Y) + 1);
+    }
+
+    public int getVertAmount() {
+        return this.vertices.size();
     }
 
 

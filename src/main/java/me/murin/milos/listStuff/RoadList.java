@@ -18,12 +18,15 @@ public class RoadList extends ListWithModel {
 
     private final ArrayList<Vertex> vertices = new ArrayList<>();
 
+    private Vertex min = null;
+    private Vertex max = null;
+
     private PointPair previous = null;
 
     public void addVertex(Vertex vertex) {
         vertices.add(vertex);
         vertex.setId(extVertexId++);
-        testExtremes(vertex);
+//        testExtremes(vertex);
         invalidateModel();
     }
 
@@ -63,12 +66,22 @@ public class RoadList extends ListWithModel {
         double halfZ = sizeZ / 2;
         double minX = getMin(Axis.X);
         double minZ = getMin(Axis.Z);
+        clearExtremes();
         for (Vertex v : vertices) {
             Utils.adjustCoordOnAxis(v, Axis.X, minX, scaleX, halfX, halfZ);
             v.setY(y);
             Utils.adjustCoordOnAxis(v, Axis.Z, minZ, scaleZ, halfX, halfZ);
             testExtremes(v);
         }
+        min.setX(-halfX);
+        min.setY(y);
+        min.setZ(-halfZ);
+        max.setX(min.getX() + sizeX);
+        max.setY(y);
+        max.setZ(min.getZ() + sizeZ);
+
+        testExtremes(min);
+        testExtremes(max);
         invalidateModel();
     }
 
@@ -91,6 +104,16 @@ public class RoadList extends ListWithModel {
 
     public ArrayList<PointPair> getStarts() {
         return starts;
+    }
+
+    public void setMin(Vertex min) {
+        this.min = min;
+        testExtremes(min);
+    }
+
+    public void setMax(Vertex max) {
+        this.max = max;
+        testExtremes(max);
     }
 
     @Override

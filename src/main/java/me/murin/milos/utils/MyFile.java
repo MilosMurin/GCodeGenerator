@@ -32,6 +32,8 @@ public class MyFile {
                 return file;
             }
         }
+        System.out.println("Resource at: [" + this.type.getSubFile() + path + "] was not found!");
+        System.out.println("Trying to search in non resorce files.");
         this.path = path;
         file = new File(this.path);
         if (file.exists()) {
@@ -45,7 +47,6 @@ public class MyFile {
     public String getResourcePath(String resourcePath) {
         URL url = getClass().getResource(this.type.getSubFile() + resourcePath);
         if (url == null) {
-            System.err.println("Resource at: [" + this.type.getSubFile() + resourcePath + "] was not found!");
             return null;
         }
         String res = url.getPath();

@@ -67,6 +67,6 @@ public class Utils {
 
 
     public static boolean isAlmostEqual(double d1, double d2) {
-        return d1 - 0.00000001 < d2 && d1 + 0.00000001 > d2;
+        return d1 - 0.00001 < d2 && d1 + 0.00001 > d2;
     }
 }

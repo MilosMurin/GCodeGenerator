@@ -2,6 +2,7 @@ package me.murin.milos;
 
 import me.murin.milos.gcode.GCodeFileWriter;
 import me.murin.milos.gcode.GCodeReader;
+import me.murin.milos.listStuff.PointPairList;
 import me.murin.milos.listStuff.RoadList;
 import me.murin.milos.render.Model;
 import me.murin.milos.render.Render;
@@ -53,7 +54,7 @@ public class Main implements AppLogic {
 
 
     private static final String MODEL = TEST_PATH;
-    private static final String ROADS = TEST_OSM;
+    private static final String ROADS = MAP_OSM;
 
     private boolean dcelVisible = false;
     private boolean roadsVisible = true;
@@ -171,7 +172,7 @@ public class Main implements AppLogic {
 
                 String path = loadPath(stack, filters);
                 if (path != null) {
-                    if (path.endsWith("roads")) {
+                    if (path.endsWith("osm")) {
                         RoadOsmLoader rl = new RoadOsmLoader(path);
                         roadList = rl.getRoadList();
                     } else if (path.endsWith("obj")) {
@@ -180,6 +181,11 @@ public class Main implements AppLogic {
                     }
                     if (roadList != null) {
                         refreshRoadModel(scene);
+
+                        if (intersectModel != null) {
+                            intersectModel.cleanup();
+                            intersectModel = null;
+                        }
 
                         intersectorator.setRoads(roadList.getStarts());
                     }
@@ -219,18 +225,21 @@ public class Main implements AppLogic {
                 intersectModel.cleanup();
             }
             intersectorator.intersect();
-            intersectorator.getResult().createModel();
-            intersectModel = intersectorator.getResult().getModel();
+            PointPairList ppl = intersectorator.getResult();
+            ppl.createModel();
+            intersectModel = ppl.getModel();
             addModelAndEntity(scene, intersectModel, "intersectEntity", true);
             if (reader != null) {
                 try {
-                    String gcode = intersectorator.getResult().generateGCode(reader.getExtremes());
+                    String gcode = ppl.generateGCode(reader.getExtremes());
                     GCodeFileWriter writer = new GCodeFileWriter("out.gcode");
+                    GCodeFileWriter writer2 = new GCodeFileWriter("out2.gcode");
                     writer.write(reader.getBeforeGCode());
                     writer.write(gcode);
+                    writer2.write(gcode);
                     writer.write(reader.getAfterGCode());
                     writer.close();
-                    System.out.println(gcode);
+                    writer2.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -265,7 +274,9 @@ public class Main implements AppLogic {
 
         PointerBuffer pp = stack.mallocPointer(1);
 
-        if (NFD_OpenDialog(pp, filters, (ByteBuffer) null) == NFD_OKAY) {
+        int ret = NFD_OpenDialog(pp, filters, (ByteBuffer) null);
+
+        if (ret == NFD_OKAY) {
             String s = pp.getStringUTF8(0); // this is the path to the absolute model
             NFD_FreePath(pp.get(0));
             return s;

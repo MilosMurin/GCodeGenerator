@@ -100,6 +100,12 @@ public class Line {
         double z = vertex.getZ();
         double xt = getTForX(x);
         double zt = getTForZ(z);
+        if (Double.isNaN(zt)) {
+            return xt;
+        }
+        if (Double.isNaN(xt)) {
+            return zt;
+        }
         if (!Utils.isAlmostEqual(xt, zt)) {
             System.out.printf("Line x=%f+%ft; y=%f+%ft; z=%f+%ft\n", this.x0, ux, y0, uy, this.z0, uz);
             System.out.printf("Point x=%f; z=%f\n", x, z);

@@ -111,7 +111,16 @@ public class Intersectorator {
                         v = intersect.intersect(lineIntersection);
                     }
                     if (v == null) {
-                        break;
+                        road = road.getNext();
+                        face = dcel.getFaceForPoint(road.getStart());
+                        while (road.hasNext() && face == null) {
+                            road = road.getNext();
+                            face = dcel.getFaceForPoint(road.getStart());
+                        }
+                        if (face == null) {
+                            break;
+                        }
+                        continue;
                     }
                     intersected = intersect;
                     endPoint = v;
