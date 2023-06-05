@@ -98,7 +98,7 @@ public class Intersectorator {
                                     // an edge with no twin edge is ont the edge of the model
                                     break;
                                 }
-                            } else  {
+                            } else {
                                 if (!intersect.equals(intersected.getTwinEdge())) {
                                     break;
                                 }
@@ -111,8 +111,7 @@ public class Intersectorator {
                         v = intersect.intersect(lineIntersection);
                     }
                     if (v == null) {
-                        road = road.getNext();
-                        face = dcel.getFaceForPoint(road.getStart());
+                        face = null;
                         while (road.hasNext() && face == null) {
                             road = road.getNext();
                             face = dcel.getFaceForPoint(road.getStart());
