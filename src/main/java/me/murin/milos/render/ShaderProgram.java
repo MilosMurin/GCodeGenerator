@@ -74,9 +74,7 @@ public class ShaderProgram {
 
     private void link(List<Integer> shaderModules) {
         glLinkProgram(programId);
-        if (glGetProgrami(programId, GL_VALIDATE_STATUS) == 0) {
-            throw new RuntimeException("Error validating Shader code: " + glGetProgramInfoLog(programId, 1024));
-        }
+        this.validate();
 
         shaderModules.forEach(s -> glDetachShader(programId, s));
         shaderModules.forEach(GL30::glDeleteShader);
