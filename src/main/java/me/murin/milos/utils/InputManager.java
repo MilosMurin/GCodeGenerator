@@ -10,7 +10,7 @@ public class InputManager {
     private final long handle;
     private final MouseInput mouseInput;
 
-    private final HashMap<Integer, Boolean> flags = new HashMap<>();
+    private final HashMap<Integer, Boolean> released = new HashMap<>();
     private final HashMap<Integer, Boolean> pressed = new HashMap<>();
 
     public InputManager(long handle) {
@@ -21,8 +21,8 @@ public class InputManager {
     public void tick() {
         mouseInput.input();
         for (Integer key : pressed.keySet()) {
-            if (flags.get(key)) {
-                flags.replace(key, false);
+            if (released.get(key)) {
+                released.replace(key, false);
             }
 
             if (isKeyPressed(key)) {
@@ -32,19 +32,19 @@ public class InputManager {
             } else {
                 if (pressed.get(key)) {
                     pressed.replace(key, false);
-                    flags.replace(key, true);
+                    released.replace(key, true);
                 }
             }
         }
     }
 
     public void track(int key) {
-        flags.put(key, false);
+        released.put(key, false);
         pressed.put(key, false);
     }
 
     public boolean wasReleased(int key) {
-        return flags.get(key);
+        return released.get(key);
     }
 
     public boolean isKeyPressed(int key) {

@@ -100,7 +100,6 @@ public class Window {
     public void pollEvents() {
         // processes events
         glfwPollEvents();
-        inputManager.tick();
     }
 
     public int getWidth() {
@@ -137,7 +136,6 @@ public class Window {
     public static class WindowOptions {
         public int fps = 60;
         public int height;
-        public int ups = 30;
         public int width;
     }
 

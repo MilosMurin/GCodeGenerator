@@ -53,7 +53,7 @@ public class Main implements AppLogic {
     private static final float MOVEMENT_SPEED = 0.01f;
 
 
-    private static final String MODEL = TEST_PATH;
+    private static final String MODEL = TESTSMALL_PATH;
     private static final String ROADS = MAP_OSM;
 
     private boolean dcelVisible = false;
